@@ -34,7 +34,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIim9Ov059/2WOUMwCeVFdceah85+bdILxZynUCKuB
         stage('Clone Stage') {
             steps {
                 script {
-                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
+                    git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                 }
             }
         }
