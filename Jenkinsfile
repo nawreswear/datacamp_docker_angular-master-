@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     sh 'ssh -o StrictHostKeyChecking=no -T git@github.com || true' // Vérification de la connexion SSH
-                    sh 'git clone --depth=5 -b master https://gitlab.com/jmlhmd/datacamp_docker_angular'
+                   // sh 'git clone --depth=5 -b master https://gitlab.com/jmlhmd/datacamp_docker_angular'
                 }
             }
         }
