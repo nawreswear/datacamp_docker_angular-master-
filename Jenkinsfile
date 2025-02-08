@@ -8,18 +8,18 @@ pipeline {
         DOCKER_TAG = ''
     }
     stages {
-
         stage('Cloner le dépôt') {
             steps {
                 script {
-                    // Utiliser l'URL SSH pour GitHub
-                    git "https://gitlab.com/jmlhmd/datacamp_docker_angular.git"
+           
+                            git "git@gitlab.com:jmlhmd/datacamp_docker_angular.git"
+                     
+                    }
                 }
             }
         }
     }
 }
-
 
 // Cette fonction est utilisée pour récupérer la version du commit
 def getVersion() {
