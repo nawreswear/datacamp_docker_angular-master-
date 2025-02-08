@@ -8,37 +8,12 @@ pipeline {
         DOCKER_TAG = ''
     }
     stages {
-        stage('Configuration SSH') {
-            steps {
-                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
-                        // Créer le répertoire SSH si nécessaire
-                        sh 'mkdir -p ~/.ssh'
-
-                        // Vérification de la connexion SSH avec GitHub
-                        sh "ssh -i ${SSH_KEY} -T git@github.com || true"
-
-                        // Ajouter GitHub au fichier known_hosts
-                        sh "ssh-keyscan github.com >> ~/.ssh/known_hosts"
-                    }
-                }
-            }
-        }
-
-        stage('Configurer Git') {
-            steps {
-                script {
-                    // Désactiver la vérification SSL si nécessaire
-                    sh 'git config --global http.sslVerify false'
-                }
-            }
-        }
 
         stage('Cloner le dépôt') {
             steps {
                 script {
                     // Utiliser l'URL SSH pour GitHub
-                    sh "git clone git@github.com:nawreswear/datacamp_docker_angular-master-.git"
+                    git "https://gitlab.com/jmlhmd/datacamp_docker_angular.git"
                 }
             }
         }
