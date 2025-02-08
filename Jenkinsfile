@@ -22,25 +22,19 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIim9Ov059/2WOUMwCeVFdceah85+bdILxZynUCKuB
                 }
             }
         }
+        stage('Configure Git') {
+            steps {
+                script {
+                    sh 'git config --global http.postBuffer 524288000'
+                    sh 'git config --global http.maxRequestBuffer 524288000'
+                    sh 'git config --global http.sslBackend openssl'
+                }
+            }
+        }
         stage('Clone Stage') {
             steps {
                 script {
-                    def isWindows = isUnix() ? false : true
-
-                    if (isWindows) {
-                        bat 'git config --global http.postBuffer 524288000' 
-                    } else {
-                        sh 'git config --global http.postBuffer 524288000'  
-                    }
-                    
-                    // Configurer Git pour utiliser SSH
-                    sh 'git config --global user.email "nawreselou2382@gmail.com"'
-                    sh 'git config --global user.name "nawreswear"'
-
-                    // Clone via SSH
-                    git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main'
-
-                    env.DOCKER_TAG = getVersion()
+                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                 }
             }
         }
