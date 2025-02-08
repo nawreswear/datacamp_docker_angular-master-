@@ -11,8 +11,11 @@ pipeline {
         stage ('Clone Stage') {
             steps {
                 script {
-                    // Clone the repository
-                    git 'https://gitlab.com/jmlhmd/datacamp_docker_angular.git'
+                    // Configure Git settings to avoid timeouts and increase buffer size
+                    sh 'git config --global http.postBuffer 524288000'
+                    
+                    // Clone the repository using shallow clone (depth: 1) if applicable
+                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                     
                     // Set the DOCKER_TAG environment variable to the result of getVersion()
                     env.DOCKER_TAG = getVersion()
