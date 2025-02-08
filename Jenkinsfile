@@ -14,13 +14,12 @@ pipeline {
                     // Vérifier si l'agent fonctionne dans un environnement Windows ou Unix
                     def isWindows = isUnix() ? false : true
                     
-                    // Configurer les paramètres Git pour éviter les timeouts et augmenter la taille du buffer (pour les environnements Unix)
-                    if (!isWindows) {
-                        sh 'git config --global http.postBuffer 524288000'
-                    }
+                    // Configurer Git pour éviter les problèmes de timeout
+                    sh 'git config --global http.postBuffer 524288000' // Augmenter le buffer Git pour les dépôts volumineux
                     
                     // Cloner le dépôt avec une profondeur de 1 (shallow clone)
-                    git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
+                    // Remarque : Si vous utilisez HTTPS, ajoutez l'option --depth
+                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                     
                     // Définir la variable d'environnement DOCKER_TAG à partir du résultat de la fonction getVersion()
                     env.DOCKER_TAG = getVersion()
