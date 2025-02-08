@@ -28,16 +28,17 @@ pipeline {
                 script {
                     sh 'git config --global http.postBuffer 524288000'
                     sh 'git config --global http.maxRequestBuffer 524288000'
-                    sh 'git config --global http.sslBackend openssl'
-                    sh 'git config --global user.email "nawreselou2382@gmail.com"'
-                    sh 'git config --global user.name "Nawres Jenkins"'
+                    sh 'git config --global core.compression 0'
+                    sh 'git config --global http.sslVerify false'
                 }
             }
         }
+
         stage('Clone Repository') {
             steps {
                 script {
-                    git branch: 'main', url: 'git@github.com:nawreswear/datacamp_docker_angular-master.git'
+                    git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 5
+
                 }
             }
         }
