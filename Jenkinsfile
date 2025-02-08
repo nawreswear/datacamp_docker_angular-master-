@@ -8,21 +8,21 @@ pipeline {
         DOCKER_TAG = ''
     }
     stages {
-        stage ('Clone Stage') {
+        stage('Clone Stage') {
             steps {
                 script {
-                    // Check if the agent is running on Windows or Unix-based environment
+                    // Vérifier si l'agent fonctionne dans un environnement Windows ou Unix
                     def isWindows = isUnix() ? false : true
                     
-                    // Configure Git settings to avoid timeouts and increase buffer size (for Unix environments)
+                    // Configurer les paramètres Git pour éviter les timeouts et augmenter la taille du buffer (pour les environnements Unix)
                     if (!isWindows) {
                         sh 'git config --global http.postBuffer 524288000'
                     }
                     
-                    // Clone the repository using shallow clone (depth: 1)
+                    // Cloner le dépôt avec une profondeur de 1 (shallow clone)
                     git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                     
-                    // Set the DOCKER_TAG environment variable to the result of getVersion()
+                    // Définir la variable d'environnement DOCKER_TAG à partir du résultat de la fonction getVersion()
                     env.DOCKER_TAG = getVersion()
                 }
             }
@@ -31,11 +31,13 @@ pipeline {
 }
 
 def getVersion() {
-    // Get the short commit hash (using the correct shell command for the environment)
+    // Obtenir le hash du commit court (en utilisant la commande shell appropriée pour l'environnement)
     def version = ''
     if (isUnix()) {
+        // Environnement Unix/Linux
         version = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     } else {
+        // Environnement Windows
         version = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
     return version
