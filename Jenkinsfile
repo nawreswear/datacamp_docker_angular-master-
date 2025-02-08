@@ -45,10 +45,10 @@ pipeline {
             steps {
                 script {
                     // Vérification de la connexion SSH avec GitHub
-                    sh 'ssh -T git@github.com || true'
+                  //  sh 'ssh -T git@github.com || true'
 
                     // Cloner le dépôt avec SSH (il faut une URL SSH pour GitHub)
-                    sh 'git clone git@github.com:nawreswear/datacamp_docker_angular-master-.git'
+                    git 'git@github.com:nawreswear/datacamp_docker_angular-master-.git'
                 }
             }
         }
