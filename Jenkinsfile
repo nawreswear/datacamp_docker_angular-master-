@@ -26,7 +26,8 @@ pipeline {
         stage('Configurer Git') {
             steps {
                 script {
-                    sh 'git config --global http.sslVerify false' // Désactiver la vérification SSL si nécessaire
+                    // Désactivation de la vérification SSL uniquement si nécessaire
+                    sh 'git config --global http.sslVerify false'
                 }
             }
         }
@@ -34,11 +35,12 @@ pipeline {
         stage('Cloner le dépôt') {
             steps {
                 script {
-                    sh 'ssh -o StrictHostKeyChecking=no -T git@github.com || true' // Vérification de la connexion SSH
-                   // sh 'git clone --depth=5 -b master https://gitlab.com/jmlhmd/datacamp_docker_angular'
-                     git 'https://gitlab.com/jmlhmd/datacamp_docker_angular'
-                }
+                    // Test de la connexion SSH avec GitLab
+                    sh 'ssh -o StrictHostKeyChecking=no -T git@gitlab.com || true' // Vérification de la connexion SSH à GitLab
 
+                    // Utilisation de SSH pour cloner le dépôt GitLab
+                    sh 'git clone --depth=5 -b master git@gitlab.com:jmlhmd/datacamp_docker_angular.git'
+                }
             }
         }
     }
