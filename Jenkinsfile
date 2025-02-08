@@ -14,8 +14,12 @@ pipeline {
                     // Vérifier si l'agent fonctionne dans un environnement Windows ou Unix
                     def isWindows = isUnix() ? false : true
                     
-                    // Configurer Git pour éviter les problèmes de timeout
-                    sh 'git config --global http.postBuffer 524288000' // Augmenter le buffer Git pour les dépôts volumineux
+                    // Configurer Git pour éviter les problèmes de timeout et augmenter la taille du tampon
+                    if (isWindows) {
+                        bat 'git config --global http.postBuffer 524288000' // Windows : Augmenter le buffer Git
+                    } else {
+                        sh 'git config --global http.postBuffer 524288000'  // Unix : Augmenter le buffer Git
+                    }
                     
                     // Cloner le dépôt avec une profondeur de 1 (shallow clone)
                     // Remarque : Si vous utilisez HTTPS, ajoutez l'option --depth
