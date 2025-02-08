@@ -18,8 +18,8 @@ pipeline {
                 }
             }
         }
-    }
 }
+
 
 // Cette fonction est utilisée pour récupérer la version du commit
 def getVersion() {
