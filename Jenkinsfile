@@ -15,7 +15,7 @@ pipeline {
                     sh 'git config --global http.postBuffer 524288000'
                     
                     // Clone the repository using shallow clone (depth: 1) if applicable
-                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
+                    git url: 'git@github.com:nawreswear/datacamp_docker_angular-master-.git', branch: 'main', depth: 1
                     
                     // Set the DOCKER_TAG environment variable to the result of getVersion()
                     env.DOCKER_TAG = getVersion()
