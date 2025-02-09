@@ -12,12 +12,32 @@ pipeline {
             steps {
                 script {
            
-                            git "git@gitlab.com:jmlhmd/datacamp_docker_angular.git"
+                            git "https://github.com/nawreswear/datacamp_docker_angular-master-.git"
                      
                     }
                 }
+           stage ('Docker Build') {
+                steps {
+                sh 'docker build -t nawreswear/aston_villa:${DOCKER_TAG}.'
+                }
+            } 
+            stage ('DockerHub Push') {
+                steps {
+                sh 'sudo docker login -u nawreswear -p zoo23821014'
+                sh 'sudo docker push nawreswear/aston_villa:${DOCKER_TAG}'
+                }
+            } 
+            stage ('Deploy') {
+                steps{
+                sshagent(credentials: ['Vagrant_ssh']) {
+                sh "ssh vagrant@Ip_Recette"
+
+                sh "ssh vagrant@Ip_Recette ‘sudo docker run “nawreswear/aston_villa:${DOCKER_TAG}"’”
+                } 
+                }
+                }
             }
-        }
+}
 }
 
 
