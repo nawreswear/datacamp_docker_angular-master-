@@ -83,17 +83,28 @@ pipeline {
     }
 }*/
 stage('Déploiement') {
-            steps {
-                sshagent(['12345']) {
-                    sh '''
-                        echo "Vérification de la clé SSH"
-                        ls -al /home/jenkins/.ssh/
-                        echo "apres Vérification de la clé SSH"
-                        ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
-                    '''
-                }
-            }
+    steps {
+        script {
+            // Créez le répertoire .ssh s'il n'existe pas
+            sh 'mkdir -p /home/jenkins/.ssh/'
+
+            // Copiez la clé privée SSH directement dans le répertoire .ssh
+            // Remplacez <PATH_TO_PRIVATE_KEY> par le chemin réel de votre clé privée
+            sh ''' 
+                echo "Copie de la clé SSH..."
+                cp /home/vagrant/.ssh/id_rsa /home/jenkins/.ssh/id_rsa
+                chmod 600 /home/jenkins/.ssh/id_rsa
+                ls -al /home/jenkins/.ssh/
+            '''
+
+            // Exécutez la commande SSH
+            sh '''
+                echo "Déploiement avec SSH..."
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+            '''
         }
+    }
+}
 
     }
 }
