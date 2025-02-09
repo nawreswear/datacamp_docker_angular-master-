@@ -51,22 +51,24 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
-       stage('Déploiement') {
-        steps {
-            // Vérification de l'existence du répertoire et de la clé SSH
-            sh "ls -al /home/jenkins/.ssh/"
-            
-            // Si le répertoire existe, exécuter la commande SSH
-            sh """
-                if [ -d /home/jenkins/.ssh/ ]; then
-                    echo 'Executing SSH command with key: /home/jenkins/.ssh/id_rsa'
-                    ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:fce11ed
-                else
-                    echo 'SSH directory or key file does not exist!'
-                fi
-            """
-        }
+      stage('Déploiement') {
+    steps {
+        // Créer le répertoire .ssh s'il n'existe pas
+        sh 'mkdir -p /home/jenkins/.ssh/'
+        
+        // Copier la clé privée dans le répertoire .ssh (si elle est dans un autre répertoire sur Jenkins)
+        sh 'cp /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa /home/jenkins/.ssh/'
+
+        // Vérifier que le répertoire et la clé sont accessibles
+        sh 'ls -al /home/jenkins/.ssh/'
+        
+        // Exécuter la commande SSH
+        sh """
+            ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
+        """
     }
+}
+
 
     }
 }
