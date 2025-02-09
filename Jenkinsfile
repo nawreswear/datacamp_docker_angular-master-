@@ -51,7 +51,7 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
-      stage('Déploiement') {
+     stage('Déploiement') { 
     steps {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
@@ -61,8 +61,14 @@ pipeline {
 
         // Vérifier que le répertoire et la clé sont accessibles
         sh 'ls -al /home/jenkins/.ssh/'
-        
-        // Exécuter la commande SSH
+
+        // Assurer que la clé privée a les bonnes permissions
+        sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
+
+        // Changer le propriétaire du répertoire et des fichiers pour l'utilisateur Jenkins
+        sh 'chown -R vagrant:vagrant /home/jenkins/.ssh/'
+
+        // Exécuter la commande SSH avec la clé privée pour déployer le Docker
         sh """
             ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
         """
