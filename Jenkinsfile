@@ -51,9 +51,21 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
-     stage('Déploiement') { 
+   stage('Déploiement') {
     steps {
-        // Exécuter la commande SSH avec la clé privée pour déployer le Docker
+        // Créer le répertoire .ssh s'il n'existe pas
+        sh 'mkdir -p /home/jenkins/.ssh/'
+
+        // Copier la clé privée dans le répertoire .ssh
+        sh 'cp /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa /home/jenkins/.ssh/'
+
+        // Vérifier que le répertoire et la clé sont accessibles
+        sh 'ls -al /home/jenkins/.ssh/'
+
+        // Ajuster les permissions de la clé privée
+        sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
+
+        // Exécuter la commande SSH
         sh """
             ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
         """
