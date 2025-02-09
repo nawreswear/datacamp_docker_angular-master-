@@ -56,16 +56,17 @@ pipeline {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
 
-        // Copier la clé privée dans le répertoire .ssh
+        // Vérifier si le fichier id_rsa existe à l'emplacement correct
+        sh 'ls -al /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/'
+
+        // Copier la clé privée dans le répertoire .ssh (si elle est dans un autre répertoire sur Jenkins)
         sh 'cp /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa /home/jenkins/.ssh/'
 
-        // Vérifier que le répertoire et la clé sont accessibles
+        // Vérifier que la clé privée a été copiée correctement et appliquer les permissions
+        sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
         sh 'ls -al /home/jenkins/.ssh/'
 
-        // Ajuster les permissions de la clé privée
-        sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
-
-        // Exécuter la commande SSH
+        // Exécuter la commande SSH pour déployer Docker
         sh """
             ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
         """
