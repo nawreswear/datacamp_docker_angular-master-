@@ -56,22 +56,30 @@ pipeline {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
 
-        // Vérifier si le fichier id_rsa existe à l'emplacement correct
-        sh 'ls -al /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/'
-
-        // Copier la clé privée dans le répertoire .ssh (si elle est dans un autre répertoire sur Jenkins)
-        sh 'cp /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa /home/jenkins/.ssh/'
-
-        // Vérifier que la clé privée a été copiée correctement et appliquer les permissions
-        sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
-        sh 'ls -al /home/jenkins/.ssh/'
+        // Vérifier si le fichier id_rsa existe dans le répertoire source
+        script {
+            def sshDir = '/d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/'
+            def idRsaPath = sshDir + 'id_rsa'
+            
+            if (fileExists(idRsaPath)) {
+                // Copier la clé privée dans le répertoire .ssh
+                sh "cp ${idRsaPath} /home/jenkins/.ssh/"
+                
+                // Vérifier que la clé privée a été copiée correctement et appliquer les permissions
+                sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
+                sh 'ls -al /home/jenkins/.ssh/'
+            } else {
+                error "Le fichier id_rsa n'a pas été trouvé à l'emplacement ${idRsaPath}. Veuillez vérifier le chemin."
+            }
+        }
 
         // Exécuter la commande SSH pour déployer Docker
         sh """
-            ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
+            ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:f9b2c02
         """
     }
 }
+
 
 
     }
