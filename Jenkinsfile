@@ -51,14 +51,14 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
-  stage('Déploiement') {
+ stage('Déploiement') {
     steps {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
 
         // Définir le chemin absolu du fichier id_rsa à l'intérieur d'un bloc script
         script {
-            def idRsaPath = '/d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa'
+            def idRsaPath = '/home/jenkins/.ssh/id_rsa'  // Utilisez le bon chemin ici
             def sshDir = '/home/jenkins/.ssh/'
 
             // Vérification de l'existence du fichier id_rsa
