@@ -14,7 +14,7 @@ pipeline {
         stage('Cloner le dépôt') {
             steps {
                 script {
-                    git url: "https://github.com/nawreswear/datacamp_docker_angular-master-.git"
+                    git url: 'https://github.com/nawreswear/datacamp_docker_angular-master-.git', branch: 'main'
                 }
             }
         }
