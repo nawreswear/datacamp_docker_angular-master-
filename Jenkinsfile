@@ -49,7 +49,7 @@ pipeline {
         stage('Déploiement') {
             steps {
                 sshagent(credentials: ['Vagrant_ssh']) {
-                    sh "ssh vagrant@Ip_Recette 'sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}'"
+                    sh "ssh vagrant@192.168.168.200 'sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}'"
                 }
             }
         }
