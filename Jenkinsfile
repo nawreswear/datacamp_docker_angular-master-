@@ -55,7 +55,7 @@ pipeline {
             steps {
                 // Utilisation du chemin absolu de la clé SSH pour la connexion
                 sh """
-                    ssh -i C:/Users/DELL/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 \
+                    ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 \
                     "sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}"
                 """
             }
