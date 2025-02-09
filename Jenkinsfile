@@ -54,7 +54,7 @@ pipeline {
          stage('Déploiement') {
             steps {
                 // Utiliser les credentials SSH pour la connexion à la VM
-                withCredentials([sshUserPrivateKey(credentialsId: 'vagrant', keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: '1234', keyFileVariable: 'SSH_KEY')]) {
                     sh """
                         ssh -i $SSH_KEY -o StrictHostKeyChecking=no vagrant@192.168.182.200 \
                         "sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}"
