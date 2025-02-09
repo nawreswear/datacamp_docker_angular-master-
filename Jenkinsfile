@@ -51,7 +51,7 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
- stage('Déploiement') {
+ /*stage('Déploiement') {
     steps {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
@@ -81,8 +81,17 @@ pipeline {
             ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
         """
     }
-}
-
+}*/
+stage('Déploiement') {
+            steps {
+                sshagent(['12345']) {
+                    sh '''
+                        echo "Vérification de la clé SSH"
+                        ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+                    '''
+                }
+            }
+        }
 
     }
 }
