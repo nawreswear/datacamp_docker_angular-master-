@@ -87,6 +87,8 @@ stage('Déploiement') {
                 sshagent(['12345']) {
                     sh '''
                         echo "Vérification de la clé SSH"
+                        ls -al /home/jenkins/.ssh/
+                        echo "apres Vérification de la clé SSH"
                         ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
                     '''
                 }
