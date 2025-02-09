@@ -54,8 +54,10 @@ pipeline {
         stage('Déploiement') {
             steps {
                 // Utilisation du chemin absolu de la clé SSH pour la connexion
+                sh 'which ssh'
                 sh """
-                    "ssh -i /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:3b40b34"
+                    echo 'Executing SSH command with key: /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa'
+                    ssh -i /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:3b40b34
                 """
             }
         }
