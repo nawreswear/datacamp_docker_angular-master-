@@ -46,43 +46,7 @@ pipeline {
                 }
             }
 
-       /* stage('Déploiement') {
-            steps {
-                sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
-            }
-        }*/
- /*stage('Déploiement') {
-    steps {
-        // Créer le répertoire .ssh s'il n'existe pas
-        sh 'mkdir -p /home/jenkins/.ssh/'
-
-        // Définir le chemin absolu du fichier id_rsa à l'intérieur d'un bloc script
-        script {
-            def idRsaPath = '/home/jenkins/.ssh/id_rsa'  // Utilisez le bon chemin ici
-            def sshDir = '/home/jenkins/.ssh/'
-
-            // Vérification de l'existence du fichier id_rsa
-            echo "Vérification de l'existence de la clé SSH à l'emplacement: ${idRsaPath}"
-
-            if (fileExists(idRsaPath)) {
-                echo "Le fichier id_rsa a été trouvé, copie dans ${sshDir}"
-                sh "cp ${idRsaPath} ${sshDir}"
-                // Modifier les permissions de la clé privée
-                sh 'chmod 600 /home/jenkins/.ssh/id_rsa'
-                // Vérifier que la clé est bien copiée et accessible
-                sh 'ls -al /home/jenkins/.ssh/'
-            } else {
-                error "Le fichier id_rsa n'a pas été trouvé à l'emplacement ${idRsaPath}. Veuillez vérifier le chemin."
-            }
-        }
-
-        // Exécuter la commande SSH pour le déploiement
-        sh """
-            ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:c988727
-        """
-    }
-}*/
-stage('Déploiement') {
+/*stage('Déploiement') {
     steps {
         script {
             // Créez le répertoire .ssh s'il n'existe pas
@@ -104,7 +68,23 @@ stage('Déploiement') {
             '''
         }
     }
+}*/
+stage('Déploiement') {
+    steps {
+        script {
+            // Vérification du répertoire .ssh
+            sh '''
+                echo "Vérification de la clé SSH"
+                ls -al /home/jenkins/.ssh/
+                echo "après Vérification de la clé SSH"
+                
+                # Utilisation de la clé SSH pour se connecter à la machine distante
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+            '''
+        }
+    }
 }
+
 
     }
 }
