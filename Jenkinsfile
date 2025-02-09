@@ -56,12 +56,13 @@ pipeline {
                 // Utiliser les credentials SSH pour la connexion à la VM
                 withCredentials([sshUserPrivateKey(credentialsId: '12345', keyFileVariable: 'SSH_KEY')]) {
                     sh """
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no vagrant@192.168.182.200 \
-                        "sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}"
+                        ssh -o StrictHostKeyChecking=no -i \$SSH_KEY vagrant@192.168.182.200 \
+                        'sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}'
                     """
                 }
             }
         }
+
     }
 }
 
