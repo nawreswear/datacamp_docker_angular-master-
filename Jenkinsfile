@@ -52,24 +52,21 @@ pipeline {
             }
         }*/
        stage('Déploiement') {
-            steps {
-                // Vérification du chemin du fichier de la clé
-                sh "ls -al /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/"
-
-                // Vérification si la clé existe avant de l'utiliser
-                sh """
-                    echo 'Executing SSH command with key: /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa'
-                    if [ -f /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa ]; then
-                        echo 'Found id_rsa, executing SSH command'
-                        ssh -i /d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:3b40b34
-                    else
-                        echo 'Key file not found!'
-                    fi
-                """
-            }
+        steps {
+            // Vérification de l'existence du répertoire et de la clé SSH
+            sh "ls -al /home/jenkins/.ssh/"
+            
+            // Si le répertoire existe, exécuter la commande SSH
+            sh """
+                if [ -d /home/jenkins/.ssh/ ]; then
+                    echo 'Executing SSH command with key: /home/jenkins/.ssh/id_rsa'
+                    ssh -i /home/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:fce11ed
+                else
+                    echo 'SSH directory or key file does not exist!'
+                fi
+            """
         }
-
-
+    }
 
     }
 }
