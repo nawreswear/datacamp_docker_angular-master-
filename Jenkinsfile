@@ -56,12 +56,12 @@ pipeline {
         // Créer le répertoire .ssh s'il n'existe pas
         sh 'mkdir -p /home/jenkins/.ssh/'
 
-        // Définir le chemin absolu du fichier id_rsa
-        def idRsaPath = '/d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa'
-        def sshDir = '/home/jenkins/.ssh/'
-
-        // Vérification de l'existence du fichier id_rsa
+        // Définir le chemin absolu du fichier id_rsa à l'intérieur d'un bloc script
         script {
+            def idRsaPath = '/d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/id_rsa'
+            def sshDir = '/home/jenkins/.ssh/'
+
+            // Vérification de l'existence du fichier id_rsa
             echo "Vérification de l'existence de la clé SSH à l'emplacement: ${idRsaPath}"
 
             if (fileExists(idRsaPath)) {
@@ -82,8 +82,6 @@ pipeline {
         """
     }
 }
-
-
 
 
     }
