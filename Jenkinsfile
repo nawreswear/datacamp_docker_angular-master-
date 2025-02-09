@@ -58,7 +58,7 @@ pipeline {
 
         // Vérifier si le fichier id_rsa existe dans le répertoire source
         script {
-            def sshDir = '/d/devopsworkspace/tp_infra/datacamp_docker_angular-master/.ssh/'
+            def sshDir = './datacamp_docker_angular-master/.ssh/'
             def idRsaPath = sshDir + 'id_rsa'
             
             echo "Vérification de l'existence de la clé SSH à l'emplacement: ${idRsaPath}"
@@ -82,6 +82,7 @@ pipeline {
         """
     }
 }
+
 
 
 
