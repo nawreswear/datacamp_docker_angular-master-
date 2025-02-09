@@ -51,17 +51,16 @@ pipeline {
                 sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }*/
-         stage('Déploiement') {
+        stage('Déploiement') {
             steps {
-                // Utiliser les credentials SSH pour la connexion à la VM
-                withCredentials([sshUserPrivateKey(credentialsId: '12345', keyFileVariable: 'SSH_KEY')]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no -i \$SSH_KEY vagrant@192.168.182.200 \
-                        'sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}'
-                    """
-                }
+                // Utilisation du chemin absolu de la clé SSH pour la connexion
+                sh """
+                    ssh -i C:/Users/DELL/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 \
+                    "sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}"
+                """
             }
         }
+
 
     }
 }
