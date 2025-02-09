@@ -48,7 +48,7 @@ pipeline {
 
         stage('Déploiement') {
             steps {
-                sh "ssh vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
+                sh "vagrant@192.168.182.200 \"sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}\""
             }
         }
     }
