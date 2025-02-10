@@ -36,20 +36,32 @@ pipeline {
             }
         }
 
-        stage('DockerHub Push') {
-            steps {
-                script {
-
-                    sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
-                    // Vérification de l'authentification avant de pousser l'image
-                    sh 'docker info | grep "jenkinsq"'
-                    sh 'cat ~/.docker/config.json | jq .auths'
-                    sh 'docker images'
-                    // Pousser l'image Docker
-                    sh "sudo docker push nawreswear/aston_villa:${DOCKER_TAG}"
-                }
+       stage('DockerHub Push') {
+    steps {
+        script {
+            // Login to DockerHub
+            sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
+            
+            // Vérification de l'authentification avant de pousser l'image
+            sh 'docker info | grep "Server Version"'
+            
+            // Check if jq is installed and then display auths from Docker config file
+            sh 'if command -v jq &>/dev/null; then cat ~/.docker/config.json | jq .auths; else echo "jq not installed"; fi'
+            
+            // Display the Docker images to ensure the image exists
+            sh 'docker images'
+            
+            // Check if DOCKER_TAG is defined before attempting the push
+            if (!DOCKER_TAG) {
+                error("DOCKER_TAG is not defined")
             }
+            
+            // Pousser l'image Docker
+            sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
         }
+    }
+}
+
 
 /*stage('Déploiement') {
     steps {
