@@ -48,19 +48,28 @@ pipeline {
             // Vérification de l'authentification
             sh 'docker info | grep "Server Version"'
             sh '''
-                echo "Utilisateur courant : $(whoami)"
-                echo "Répertoire personnel : $HOME"
+                if [ ! -d /home/jenkins/.ssh ]; then
+                    echo "Création du répertoire SSH pour Jenkins..."
+                    mkdir -p /home/jenkins/.ssh/
+                    chmod 700 /home/jenkins/.ssh/
+                else
+                    echo "Le répertoire SSH existe déjà."
+                fi
+                ls -al /home/jenkins/.ssh/
+            '''
+            sh '''
+                echo "Informations sur l'utilisateur Jenkins et les répertoires :"
+                whoami
+                id
+                ls -al /home/
             '''
             // Vérification de l'image avant de pousser
             sh 'docker images nawreswear/aston_villa'
            sh '''
-                echo "Création du répertoire SSH pour Jenkins..."
-                mkdir -p /home/jenkins/.ssh/
-                chmod 700 /home/jenkins/.ssh/
-                ls -al /home/jenkins/.ssh/
-            '''
-
-
+            sudo mkdir -p /home/jenkins/.ssh/
+            sudo chmod 700 /home/jenkins/.ssh/
+            sudo ls -al /home/jenkins/.ssh/
+        '''
             // Pousser l'image Docker
             sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
             // Vérification du push
