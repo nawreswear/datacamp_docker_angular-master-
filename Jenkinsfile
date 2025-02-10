@@ -40,7 +40,7 @@ pipeline {
     steps {
         script {
             // Vérifier que DOCKER_TAG est défini
-            if (!env.DOCKER_TAG) {
+            if (!DOCKER_TAG) {
                 error("DOCKER_TAG is not defined")
             }
 
