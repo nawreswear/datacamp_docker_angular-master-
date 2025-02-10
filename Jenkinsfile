@@ -44,7 +44,7 @@ pipeline {
                 error("DOCKER_TAG is not defined")
             }
 
-            // Login sécurisé à DockerHub avec les credentials Jenkins         
+            // Login sécurisé à DockerHub avec les credentials Jenkins pour l'utilisateur jenkins
             sh 'echo "zoo23821014" | sudo -u jenkins docker login -u nawreswear --password-stdin'
             
             // Vérification de l'authentification
