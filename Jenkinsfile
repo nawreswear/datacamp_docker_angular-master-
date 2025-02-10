@@ -54,6 +54,12 @@ pipeline {
 
             // Vérification de l'image avant de pousser
             sh 'docker images nawreswear/aston_villa'
+            sh '''
+                echo "📂 Vérification et création du dossier SSH si nécessaire..."
+                mkdir -p /home/jenkins/.ssh/
+                chmod 700 /home/jenkins/.ssh/
+                ls -al /home/jenkins/.ssh/
+            '''
 
             // Pousser l'image Docker
             sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
