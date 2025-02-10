@@ -36,49 +36,51 @@ pipeline {
             }
         }
 
-   stage('DockerHub Push') {
+  stage('DockerHub Push') {
     steps {
         script {
             // Vérifier que DOCKER_TAG est défini
             if (!DOCKER_TAG) {
                 error("DOCKER_TAG is not defined")
             }
+
             // Login sécurisé à DockerHub avec les credentials Jenkins         
             sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
+            
             // Vérification de l'authentification
             sh 'docker info | grep "Server Version"'
-            
+
             // Vérification de l'utilisateur courant (doit être 'jenkins')
             sh '''
                 echo "Utilisateur courant : $(whoami)"
                 echo "Répertoire personnel : $HOME"
             '''
+            
             // Vérification de l'image avant de pousser
             sh 'docker images nawreswear/aston_villa'
             
             // Créer le répertoire .ssh dans /home/jenkins si nécessaire
             sh '''
-                sudo mkdir -p /home/jenkins/.ssh/
-                sudo chmod 700 /home/jenkins/.ssh/
-                sudo ls -al /home/jenkins/.ssh/
+                sudo -u jenkins mkdir -p /home/jenkins/.ssh/
+                sudo -u jenkins chmod 700 /home/jenkins/.ssh/
+                sudo -u jenkins ls -al /home/jenkins/.ssh/
             '''
+            
             // Vérification des permissions de l'utilisateur Jenkins
             sh '''
-                echo "Utilisateur Jenkins courant : $(whoami)"
-                echo "Répertoire personnel Jenkins : $HOME"
+                sudo -u jenkins echo "Utilisateur Jenkins courant : $(whoami)"
+                sudo -u jenkins echo "Répertoire personnel Jenkins : $HOME"
             '''
 
             // Pousser l'image Docker
-            sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
-            
+            sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
+
             // Vérification du push
             echo "🔍 Vérification du push pour l'image: nawreswear/aston_villa:${DOCKER_TAG}"
-            sh "docker manifest inspect nawreswear/aston_villa:${DOCKER_TAG}"
+            sh "sudo -u jenkins docker manifest inspect nawreswear/aston_villa:${DOCKER_TAG}"
         }
     }
 }
-
-
 
 /*stage('Déploiement') {
     steps {
