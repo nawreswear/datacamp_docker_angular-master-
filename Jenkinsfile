@@ -38,13 +38,17 @@ pipeline {
 
         stage('DockerHub Push') {
             steps {
-                    script {
-                        // Connexion DockerHub avec mot de passe en ligne de commande 
-                        sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
-                        sh "sudo docker push nawreswear/aston_villa:${DOCKER_TAG}"
-                    }
+                script {
+                    // Connexion DockerHub avec mot de passe en ligne de commande
+                    // Assure-toi que le login est bien effectué avant le push
+                    sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
+                    // Vérification de l'authentification avant de pousser l'image
+                    sh 'docker whoami'
+                    // Pousser l'image Docker
+                    sh "sudo docker push nawreswear/aston_villa:${DOCKER_TAG}"
                 }
             }
+        }
 
 /*stage('Déploiement') {
     steps {
