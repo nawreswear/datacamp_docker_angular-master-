@@ -47,15 +47,19 @@ pipeline {
             sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
             // Vérification de l'authentification
             sh 'docker info | grep "Server Version"'
-
+            sh '''
+                echo "Utilisateur courant : $(whoami)"
+                echo "Répertoire personnel : $HOME"
+            '''
             // Vérification de l'image avant de pousser
             sh 'docker images nawreswear/aston_villa'
-            sh '''
-                echo "Vérification et création du dossier SSH si nécessaire..."
-                mkdir -p ~/.ssh/
-                chmod 700 ~/.ssh/
-                ls -al ~/.ssh/
+           sh '''
+                echo "Création du répertoire SSH pour Jenkins..."
+                mkdir -p /home/jenkins/.ssh/
+                chmod 700 /home/jenkins/.ssh/
+                ls -al /home/jenkins/.ssh/
             '''
+
 
             // Pousser l'image Docker
             sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
