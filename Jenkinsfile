@@ -31,7 +31,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh "docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
+                    sh "sudo docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
                 }
             }
         }
@@ -41,7 +41,7 @@ pipeline {
                     script {
                         // Connexion DockerHub avec mot de passe en ligne de commande
                         sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
-                        sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
+                        sh "sudo docker push nawreswear/aston_villa:${DOCKER_TAG}"
                     }
                 }
             }
