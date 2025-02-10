@@ -45,7 +45,7 @@ pipeline {
             }
 
             // Login sécurisé à DockerHub avec les credentials Jenkins         
-            sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
+            sh 'echo "zoo23821014" | sudo -u jenkins docker login -u nawreswear --password-stdin'
             
             // Vérification de l'authentification
             sh 'docker info | grep "Server Version"'
