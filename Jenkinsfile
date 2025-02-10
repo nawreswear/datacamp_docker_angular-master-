@@ -43,23 +43,20 @@ pipeline {
             if (!DOCKER_TAG) {
                 error("DOCKER_TAG is not defined")
             }
-
-            // Login sécurisé à DockerHub avec les credentials Jenkins
-          
+            // Login sécurisé à DockerHub avec les credentials Jenkins         
             sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
-            
-
             // Vérification de l'authentification
             sh 'docker info | grep "Server Version"'
 
             // Vérification de l'image avant de pousser
             sh 'docker images nawreswear/aston_villa'
             sh '''
-            echo " Vérification et création du dossier SSH si nécessaire..."
-            mkdir -p ~/.ssh/
-            chmod 700 ~/.ssh/
-            ls -al ~/.ssh/
-        '''
+                echo "Vérification et création du dossier SSH si nécessaire..."
+                mkdir -p ~/.ssh/
+                chmod 700 ~/.ssh/
+                ls -al ~/.ssh/
+            '''
+
             // Pousser l'image Docker
             sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
             // Vérification du push
