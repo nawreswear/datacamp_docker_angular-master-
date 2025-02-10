@@ -57,6 +57,8 @@ pipeline {
 
             // Pousser l'image Docker
             sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
+            // Vérification du push
+            sh "docker manifest inspect nawreswear/aston_villa:${env.DOCKER_TAG}"
         }
     }
 }
