@@ -42,7 +42,7 @@ pipeline {
 
                     sh 'echo "zoo23821014" | docker login -u nawreswear --password-stdin'
                     // Vérification de l'authentification avant de pousser l'image
-                    sh 'docker whoami'
+                    sh 'docker info | grep "jenkinsq"'
                     sh 'cat ~/.docker/config.json | jq .auths'
                     sh 'docker images'
                     // Pousser l'image Docker
