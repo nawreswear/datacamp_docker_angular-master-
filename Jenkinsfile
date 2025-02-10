@@ -41,7 +41,7 @@ pipeline {
                     script {
                         // Connexion DockerHub avec mot de passe en ligne de commande
                         sh 'echo "zoo23821014" | docker login -u nawreswear --zoo23821014-stdin'
-                        sh "sudo docker push nawreswear/aston_villa:${DOCKER_TAG}"
+                        sh "docker push nawreswear/aston_villa:${DOCKER_TAG}"
                     }
                 }
             }
