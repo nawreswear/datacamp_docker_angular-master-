@@ -73,22 +73,11 @@ pipeline {
 stage('Déploiement') {
     steps {
         script {
-                sh '''
-            sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-            sudo -u jenkins chmod 600 /home/jenkins/.ssh/id_rsa
-            sudo -u jenkins ls -l /home/jenkins/.ssh/id_rsa
+             sh '''
+  sudo -u jenkins bash -c "if [ -f /home/jenkins/.ssh/id_rsa ]; then echo 'Clé SSH trouvée.'; else echo 'La clé SSH est manquante.'; exit 1; fi"
+  sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+'''
 
-            # Vérifier si la clé existe
-            if [ -f /home/jenkins/.ssh/id_rsa ]; then
-                echo "Clé SSH trouvée."
-            else
-                echo "La clé SSH est manquante."
-                exit 1
-            fi
-
-            # Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
-            ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
-        '''
 
 
         }
