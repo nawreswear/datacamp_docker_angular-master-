@@ -73,6 +73,12 @@ pipeline {
 stage('Déploiement') {
     steps {
         script {
+            sh '''
+  sudo -u jenkins bash -c "ls -l /home/jenkins/.ssh"
+  sudo -u jenkins bash -c "if [ -f /home/jenkins/.ssh/id_rsa ]; then echo 'Clé SSH trouvée.'; else echo 'La clé SSH est manquante.'; exit 1; fi"
+  sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+'''
+echo "ci fin"
              sh '''
   sudo -u jenkins bash -c "if [ -f /home/jenkins/.ssh/id_rsa ]; then echo 'Clé SSH trouvée.'; else echo 'La clé SSH est manquante.'; exit 1; fi"
   sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
