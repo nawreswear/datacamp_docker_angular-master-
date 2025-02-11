@@ -77,7 +77,6 @@ stage('Déploiement') {
             sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
             sudo -u jenkins chmod 600 /home/jenkins/.ssh/id_rsa
             sudo -u jenkins ls -l /home/jenkins/.ssh/id_rsa
-            ls -l /home/jenkins/.ssh/id_rsa
 
             # Vérifier si la clé existe
             if [ -f /home/jenkins/.ssh/id_rsa ]; then
