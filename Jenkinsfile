@@ -74,21 +74,26 @@ stage('Déploiement') {
         script {
             sh '''
                 # Vérifier que la clé SSH existe et a les bonnes permissions
-                sudo -u jenkins bash -c "if [ -f /home/jenkins/.ssh/id_rsa ]; then echo 'Clé SSH trouvée.'; else echo 'La clé SSH est manquante.'; exit 1; fi"
-                
+                if [ -f /home/jenkins/.ssh/id_rsa ]; then
+                    echo 'Clé SSH trouvée.'
+                else
+                    echo 'La clé SSH est manquante.'
+                    exit 1
+                fi
+
                 # Vérifier les permissions de la clé SSH
-                sudo -u jenkins bash -c "ls -l /home/jenkins/.ssh/id_rsa"
-                sudo -u jenkins bash -c "chmod 600 /home/jenkins/.ssh/id_rsa"
-                sudo -u jenkins bash -c "chown jenkins:jenkins /home/jenkins/.ssh/id_rsa"
-                
-                # Tester si l'utilisateur jenkins peut exécuter Docker
-                sudo -u jenkins bash -c 'docker info > /dev/null 2>&1'
+                ls -l /home/jenkins/.ssh/id_rsa
+                chmod 600 /home/jenkins/.ssh/id_rsa
+                chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+
+                # Tester si l'utilisateur jenkins peut exécuter Docker (sans sudo si jenkins est dans le groupe docker)
+                docker info > /dev/null 2>&1
                 if [ $? -ne 0 ]; then
                     echo "L'utilisateur jenkins ne peut pas accéder à Docker."; exit 1;
                 fi
 
                 # Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
-                sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
             '''
         }
     }
