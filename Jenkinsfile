@@ -47,30 +47,17 @@ pipeline {
             // Login sécurisé à DockerHub avec les credentials Jenkins pour l'utilisateur jenkins
             sh 'echo "zoo23821014" | sudo -u jenkins docker login -u nawreswear --password-stdin'
             
-            // Vérification de l'authentification
-            sh 'docker info | grep "Server Version"'
+            sh '''
+                    echo "Vérification des groupes de l'utilisateur Jenkins"
+                    groups jenkins
 
-            // Vérification de l'utilisateur courant (doit être 'jenkins')
-            sh '''
-                echo "Utilisateur courant : $(whoami)"
-                echo "Répertoire personnel : $HOME"
-            '''
-            
-            // Vérification de l'image avant de pousser
-            sh 'docker images nawreswear/aston_villa'
-            
-            // Créer le répertoire .ssh dans /home/jenkins si nécessaire
-            sh '''
-                sudo -u jenkins mkdir -p /home/jenkins/.ssh/
-                sudo -u jenkins chmod 700 /home/jenkins/.ssh/
-                sudo -u jenkins ls -al /home/jenkins/.ssh/
-            '''
-            
-            // Vérification des permissions de l'utilisateur Jenkins
-            sh '''
-                sudo -u jenkins echo "Utilisateur Jenkins courant : $(whoami)"
-                sudo -u jenkins echo "Répertoire personnel Jenkins : $HOME"
-            '''
+                    echo "Vérification des permissions sur le socket Docker"
+                    ls -l /var/run/docker.sock
+
+                    echo "Essai d'accès à Docker"
+                    sudo -u jenkins docker info
+                '''
+          
 
             // Pousser l'image Docker
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
