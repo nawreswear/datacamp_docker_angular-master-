@@ -83,8 +83,8 @@ stage('Déploiement') {
 
                 # Vérifier les permissions de la clé SSH
                 ls -l /home/jenkins/.ssh/id_rsa
-                chmod 600 /home/jenkins/.ssh/id_rsa
-                chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+                sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
 
                 # Tester si l'utilisateur jenkins peut exécuter Docker
                 docker info > /dev/null 2>&1
