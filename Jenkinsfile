@@ -76,6 +76,11 @@ stage('Déploiement') {
                 # Vérifier que la clé SSH existe et a les bonnes permissions
                 sudo -u jenkins bash -c "if [ -f /home/jenkins/.ssh/id_rsa ]; then echo 'Clé SSH trouvée.'; else echo 'La clé SSH est manquante.'; exit 1; fi"
                 
+                # Vérifier les permissions de la clé SSH
+                sudo -u jenkins bash -c "ls -l /home/jenkins/.ssh/id_rsa"
+                sudo -u jenkins bash -c "chmod 600 /home/jenkins/.ssh/id_rsa"
+                sudo -u jenkins bash -c "chown jenkins:jenkins /home/jenkins/.ssh/id_rsa"
+                
                 # Tester si l'utilisateur jenkins peut exécuter Docker
                 sudo -u jenkins bash -c 'docker info > /dev/null 2>&1'
                 if [ $? -ne 0 ]; then
