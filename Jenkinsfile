@@ -63,8 +63,9 @@ pipeline {
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
 
             // Vérification du push
-            echo "🔍 Vérification du push pour l'image: nawreswear/aston_villa:${DOCKER_TAG}"
+            //echo "🔍 Vérification du push pour l'image: nawreswear/aston_villa:${DOCKER_TAG}"
             sh "sudo -u jenkins docker manifest inspect nawreswear/aston_villa:${DOCKER_TAG}"
+            echo "push fait sucessufly: nawreswear/aston_villa:${DOCKER_TAG}"
         }
     }
 }
@@ -74,14 +75,20 @@ stage('Déploiement') {
         script {
             // Vérification du répertoire .ssh
             sh '''
-                
-                # Utilisation de la clé SSH pour se connecter à la machine distante
+                # Vérifier que la clé existe
+                if [ -f /home/jenkins/.ssh/id_rsa ]; then
+                    echo "Clé SSH trouvée."
+                else
+                    echo "La clé SSH est manquante."
+                    exit 1
+                fi
+
+                # Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
                 ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
             '''
         }
     }
 }
-
 
     }
 }
