@@ -67,39 +67,49 @@ pipeline {
 stage('Générer la clé SSH') {
     steps {
         script {
-            sh '''
-                if [ ! -f /home/jenkins/.ssh/id_rsa ]; then
+            // Vérifier si la clé SSH existe déjà
+            if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
+                sh '''
                     ssh-keygen -t rsa -b 4096 -f /home/jenkins/.ssh/id_rsa -N ""
-                fi
-            '''
+                    sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                    sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+                '''
+            }
         }
     }
 }
 
+
 stage('Déploiement') {
     steps {
         script {
-            sh '''
-                # Vérifier que la clé SSH existe et a les bonnes permissions
-                if [ -f /home/jenkins/.ssh/id_rsa ]; then
-                    echo 'Clé SSH trouvée.'
-                else
-                    echo 'La clé SSH est manquante.'
-                    exit 1
-                fi
+            // Vérifier que la clé SSH existe
+            if (fileExists('/home/jenkins/.ssh/id_rsa')) {
+                echo 'Clé SSH trouvée.'
+            } else {
+                echo 'La clé SSH est manquante.'
+                currentBuild.result = 'FAILURE'  // Marquer l'étape comme échouée
+                return  // Sortir de l'étape si la clé SSH est manquante
+            }
 
-                # Vérifier les permissions de la clé SSH
-                ls -l /home/jenkins/.ssh/id_rsa
+            // Vérifier les permissions de la clé SSH
+            sh '''
                 sudo chmod 600 /home/jenkins/.ssh/id_rsa
                 sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+                ls -l /home/jenkins/.ssh/id_rsa
+            '''
 
-                # Tester si l'utilisateur jenkins peut exécuter Docker
+            // Tester si l'utilisateur jenkins peut exécuter Docker
+            sh '''
                 sudo -u jenkins docker info > /dev/null 2>&1
                 if [ $? -ne 0 ]; then
-                    echo "L'utilisateur jenkins ne peut pas accéder à Docker."; exit 1;
+                    echo "L'utilisateur jenkins ne peut pas accéder à Docker."
+                    exit 1
                 fi
+            '''
 
-                # Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
+            // Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
+            sh '''
                 ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
             '''
         }
