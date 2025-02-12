@@ -64,6 +64,18 @@ pipeline {
         }
     }
 }
+stage('Générer la clé SSH') {
+    steps {
+        script {
+            sh '''
+                if [ ! -f /home/jenkins/.ssh/id_rsa ]; then
+                    ssh-keygen -t rsa -b 4096 -f /home/jenkins/.ssh/id_rsa -N ""
+                fi
+            '''
+        }
+    }
+}
+
 stage('Déploiement') {
     steps {
         script {
