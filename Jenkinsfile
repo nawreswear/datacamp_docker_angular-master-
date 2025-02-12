@@ -121,9 +121,9 @@ stage('Docker Access Check') {
 stage('Deployment') {
     steps {
         script {
-            // Use a dedicated user with sudo access for SSH and Docker commands
+            // No sudo needed if jenkins is in the docker group
             def deploymentResult = sh(script: """
-                sudo -u docker_user ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
             """, returnStatus: true)
 
             if (deploymentResult != 0) {
