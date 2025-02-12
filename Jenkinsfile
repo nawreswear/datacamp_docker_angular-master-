@@ -70,7 +70,10 @@ stage('Générer la clé SSH') {
             // Vérifier si la clé SSH existe déjà
             if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
                 sh '''
-                    ssh-keygen -t rsa -b 4096 -f /home/jenkins/.ssh/id_rsa -N ""
+                    sudo -u jenkins ssh-keygen -t rsa -b 4096 -f /home/jenkins/.ssh/id_rsa -N ""
+                '''
+                // Appliquer les bonnes permissions après la création
+                sh '''
                     sudo chmod 600 /home/jenkins/.ssh/id_rsa
                     sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
                 '''
