@@ -87,7 +87,7 @@ stage('Déploiement') {
                 sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
 
                 # Tester si l'utilisateur jenkins peut exécuter Docker
-                docker info > /dev/null 2>&1
+                sudo -u jenkins docker info > /dev/null 2>&1
                 if [ $? -ne 0 ]; then
                     echo "L'utilisateur jenkins ne peut pas accéder à Docker."; exit 1;
                 fi
