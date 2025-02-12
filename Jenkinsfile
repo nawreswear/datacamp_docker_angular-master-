@@ -61,18 +61,6 @@ pipeline {
 
             // Pousser l'image Docker
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
-
-            sh "sudo -u jenkins docker manifest inspect nawreswear/aston_villa:${DOCKER_TAG}"
-            echo "push fait sucessufly: nawreswear/aston_villa:${DOCKER_TAG}"
-
-             sh '''
-                # Vérifier la connexion à Docker Hub
-                echo "Connexion à Docker Hub"
-                echo "$DOCKER_PASSWORD" | sudo -u jenkins docker login -u nawreswear --password-stdin
-                if [ $? -ne 0 ]; then
-                    echo "La connexion à Docker Hub a échoué."; exit 1;
-                fi
-            '''
         }
     }
 }
