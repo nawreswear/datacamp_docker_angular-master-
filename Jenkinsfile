@@ -87,40 +87,34 @@ stage('Vérification de la clé SSH') {
 stage('Appliquer les bonnes permissions') {
     steps {
         script {
-            // Assurez-vous que le répertoire et le fichier ont les bonnes permissions
             sh '''
-                sudo chmod 700 /home/jenkins/.ssh
-                sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-            '''
-            // Vérification que les permissions sont correctement appliquées
-            sh '''
-                ls -l /home/jenkins/.ssh/id_rsa
+                if [ -f /home/jenkins/.ssh/id_rsa ]; then
+                    sudo chmod 700 /home/jenkins/.ssh
+                    sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                    sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+                else
+                    echo "Le fichier id_rsa est manquant, vérifiez sa présence."
+                    exit 1
+                fi
             '''
         }
     }
 }
-
 stage('Déploiement') {
     steps {
         script {
-            // Vérifier que la clé SSH existe
-            if (fileExists('/home/jenkins/.ssh/id_rsa')) {
-                echo 'Clé SSH trouvée.'
-            } else {
+            if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
                 echo 'La clé SSH est manquante.'
-                currentBuild.result = 'FAILURE'  // Marquer l'étape comme échouée
-                return  // Sortir de l'étape si la clé SSH est manquante
+                currentBuild.result = 'FAILURE'
+                return
             }
 
-            // Vérifier les permissions de la clé SSH
             sh '''
                 sudo chmod 600 /home/jenkins/.ssh/id_rsa
                 sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-                ls -l /home/jenkins/.ssh/id_rsa
             '''
 
-            // Tester si l'utilisateur jenkins peut exécuter Docker
+            // Vérifier l'accès à Docker en tant que Jenkins
             sh '''
                 sudo -u jenkins docker info > /dev/null 2>&1
                 if [ $? -ne 0 ]; then
@@ -129,7 +123,7 @@ stage('Déploiement') {
                 fi
             '''
 
-            // Utilisation de la clé SSH pour se connecter à la machine distante et exécuter Docker
+            // Lancer le conteneur avec SSH
             sh '''
                 ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
             '''
