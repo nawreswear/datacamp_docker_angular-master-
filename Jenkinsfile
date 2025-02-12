@@ -64,20 +64,42 @@ pipeline {
         }
     }
 }
-stage('Générer la clé SSH') {
+stage('Vérification de la clé SSH') {
     steps {
         script {
-            // Vérifier si la clé SSH existe déjà
-            if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
-                sh '''
-                    # Forcer l'écrasement de la clé existante sans demander de confirmation
-                    yes y | sudo -u jenkins ssh-keygen -t rsa -b 4096 -f /home/jenkins/.ssh/id_rsa -N ""
-                '''
+            // Vérification de l'existence du fichier de la clé
+            if (fileExists('/home/jenkins/.ssh/id_rsa')) {
+                echo 'Clé SSH trouvée.'
+            } else {
+                echo 'La clé SSH est manquante.'
+                currentBuild.result = 'FAILURE'  // Marquer l'étape comme échouée
+                return  // Sortir de l'étape si la clé SSH est manquante
             }
+
+            // Vérification des permissions de la clé
+            sh '''
+                ls -l /home/jenkins/.ssh/id_rsa
+            '''
         }
     }
 }
 
+stage('Appliquer les bonnes permissions') {
+    steps {
+        script {
+            // Assurez-vous que le répertoire et le fichier ont les bonnes permissions
+            sh '''
+                sudo chmod 700 /home/jenkins/.ssh
+                sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+            '''
+            // Vérification que les permissions sont correctement appliquées
+            sh '''
+                ls -l /home/jenkins/.ssh/id_rsa
+            '''
+        }
+    }
+}
 
 stage('Déploiement') {
     steps {
@@ -114,7 +136,6 @@ stage('Déploiement') {
         }
     }
 }
-
 
 
     }
