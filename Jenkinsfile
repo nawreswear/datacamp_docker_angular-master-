@@ -87,16 +87,14 @@ stage('Vérification de la clé SSH') {
 stage('Appliquer les bonnes permissions') {
     steps {
         script {
-            sh '''
-                if [ -f /home/jenkins/.ssh/id_rsa ]; then
-                    sudo chmod 700 /home/jenkins/.ssh
-                    sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                    sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-                else
-                    echo "Le fichier id_rsa est manquant, vérifiez sa présence."
-                    exit 1
-                fi
-            '''
+         sh '''
+    if [ ! -f /home/jenkins/.ssh/id_rsa ]; then
+        echo "Erreur : Le fichier id_rsa est introuvable !"
+        ls -l /home/jenkins/.ssh  # Ajoutez cette ligne pour voir ce que Jenkins peut voir
+        exit 1
+    fi
+'''
+
         }
     }
 }
