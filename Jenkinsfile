@@ -116,37 +116,30 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
     }
 }
 
-       stage('Déploiement') {
+    stage('Configurer la clé SSH') {
     steps {
         script {
             sh '''
                 #!/bin/bash -e
-                echo "🚀 Déploiement de l'application"
+                echo "🔑 Configuration de la clé SSH"
 
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
-                #!/bin/bash -e
+                mkdir -p ~/.ssh
+                chmod 700 ~/.ssh
 
-                echo "🔍 Vérification du conteneur existant..."
-                if docker ps -a --format '{{.Names}}' | grep -q "^aston_villa$"; then
-                    echo "🛑 Arrêt et suppression du conteneur existant"
-                    docker stop aston_villa || true
-                    docker rm aston_villa || true
-                else
-                    echo "✅ Aucun conteneur existant à supprimer"
-                fi
+                # Réécriture correcte de la clé privée
+                echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+                chmod 600 ~/.ssh/id_rsa
 
-                echo "🚀 Démarrage du nouveau conteneur..."
-                docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG} || {
-                    echo "❌ Erreur: Échec du lancement du conteneur"
-                    exit 1
-                }
+                # Ajout de l'hôte distant aux clés connues
+                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                chmod 644 ~/.ssh/known_hosts
 
-                echo "✅ Déploiement terminé avec succès."
-                EOF
+                echo "✅ Clé SSH configurée avec succès."
             '''
         }
     }
 }
+
 
 
     }
