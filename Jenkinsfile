@@ -129,7 +129,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             }
         }
 
-        stage('Check SSH Key Existence and Permissions') {
+       /* stage('Check SSH Key Existence and Permissions') {
             steps {
                 script {
                     // Écrire la clé SSH dans le répertoire approprié
@@ -144,7 +144,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                     '''
                 }
             }
-        }
+        }*/
 
         stage('Deployment') {
             steps {
