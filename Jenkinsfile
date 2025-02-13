@@ -128,36 +128,34 @@ stage('Vérifier les commandes') {
         }
     }
 }
-stage('Déploiement') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Déploiement de l'application"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<EOF
-                set -euxo pipefail
-                # Arrêt et suppression de l'ancien conteneur
-                if docker ps -a | grep -q "aston_villa"; then
-                    echo "🛠️ Arrêt du conteneur existant"
-                    docker stop aston_villa || true
-                    docker rm aston_villa || true
-                else
-                    echo "ℹ️ Aucun conteneur existant à supprimer"
-                fi
+        stage('Déploiement') {
+            steps {
+                script {
+                    sh '''
+                        set -euxo pipefail
+                        echo "Déploiement de l'application"
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<EOF
+        set -euxo pipefail
 
-                # Lancement du nouveau conteneur
-                echo "🚀 Lancement du nouveau conteneur"
-                docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
+        # Arrêt et suppression de l'ancien conteneur
+        if docker ps -a | grep -q "aston_villa"; then
+            echo "🛠️ Arrêt du conteneur existant"
+            docker stop aston_villa || true
+            docker rm aston_villa || true
+        else
+            echo "ℹ️ Aucun conteneur existant à supprimer"
+        fi
 
-                echo "✅ Déploiement terminé avec succès."
-                EOF
-                            '''
-                        }
+        # Lancement du nouveau conteneur
+        echo "🚀 Lancement du nouveau conteneur"
+        docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
 
-
-                    }
+        echo "✅ Déploiement terminé avec succès."
+        EOF
+                    '''
                 }
-
+            }
+        }
 
 
     }
