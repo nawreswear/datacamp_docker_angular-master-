@@ -120,12 +120,11 @@ stage('Vérifier utilisateur et permissions') {
                     sh '''
                         set -e
                         echo "Utilisateur courant: $(whoami)"
-                        echo "Groupes de l'utilisateur:"
-                        groups
+                        echo "Groupes de l'utilisateur: $(groups || echo 'Erreur: impossible d'afficher les groupes')"
                         echo "Vérification des permissions sur /home/jenkins"
-                        ls -ld /home/jenkins || true
-                        ls -l /home/jenkins/.ssh/id_rsa || true
-                        echo "Vérification terminée."
+                        ls -ld /home/jenkins || echo "⚠️ Dossier non trouvé"
+                        ls -l /home/jenkins/.ssh/id_rsa || echo "⚠️ Clé SSH non trouvée"
+                        echo "✅ Vérification terminée."
                     '''
                 }
             }
@@ -139,11 +138,14 @@ stage('Vérifier utilisateur et permissions') {
                         echo "Configuration de la clé SSH"
                         mkdir -p ~/.ssh
                         chmod 700 ~/.ssh
-                        echo -e "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+                        unset HISTFILE  # Empêcher l'enregistrement dans l'historique
+                        cat <<EOF > ~/.ssh/id_rsa
+                        ${SSH_PRIVATE_KEY}
+                        EOF
                         chmod 600 ~/.ssh/id_rsa
-                        ssh-keyscan -t rsa -H 192.168.182.200 >> ~/.ssh/known_hosts
+                        ssh-keyscan -t rsa -H 192.168.182.200 > ~/.ssh/known_hosts
                         chmod 644 ~/.ssh/known_hosts
-                        echo "Configuration de la clé SSH terminée."
+                        echo "✅ Configuration de la clé SSH terminée."
                     '''
                 }
             }
@@ -155,8 +157,7 @@ stage('Vérifier utilisateur et permissions') {
                     sh '''
                         set -e
                         echo "Vérification de l'accès SSH"
-                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion SSH réussie"
-                        echo "Connexion SSH vérifiée avec succès."
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo ✅ Connexion SSH réussie"
                     '''
                 }
             }
@@ -169,12 +170,12 @@ stage('Vérifier utilisateur et permissions') {
                         set -e
                         echo "Vérification des permissions Docker"
                         if [ ! -S /var/run/docker.sock ]; then
-                            echo "Erreur: Docker n'est pas accessible."
+                            echo "❌ Erreur: Docker n'est pas accessible."
                             exit 1
                         fi
                         ls -l /var/run/docker.sock
-                        docker info
-                        echo "Docker est accessible."
+                        docker info || { echo "❌ Erreur: Docker ne répond pas."; exit 1; }
+                        echo "✅ Docker est accessible."
                     '''
                 }
             }
@@ -186,10 +187,15 @@ stage('Vérifier utilisateur et permissions') {
                     sh '''
                         set -e
                         echo "Déploiement de l'application"
-                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
-                            "docker stop aston_villa || true && docker rm aston_villa || true && \
-                            docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
-                        echo "Déploiement terminé avec succès."
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 << 'EOF'
+                            set -e
+                            echo "🛠️ Arrêt et suppression de l'ancien conteneur"
+                            docker stop aston_villa || true
+                            docker rm aston_villa || true
+                            echo "🚀 Lancement du nouveau conteneur"
+                            docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
+                            echo "✅ Déploiement terminé avec succès."
+                        EOF
                     '''
                 }
             }
