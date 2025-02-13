@@ -115,127 +115,27 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-  /*stage('Vérifier utilisateur et permissions') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Utilisateur courant: $(whoami)"
-                echo "Groupes de l'utilisateur:"
-                groups || echo "⚠️ Impossible d'afficher les groupes"
-                echo "Vérification des permissions sur /home/jenkins"
-                ls -ld /home/jenkins || echo "⚠️ Dossier /home/jenkins non trouvé"
-                ls -l /home/jenkins/.ssh/id_rsa || echo "⚠️ Clé SSH non trouvée"
-            '''
-        }
-    }
-}
-
-stage('Configurer la clé SSH') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Configuration de la clé SSH"
-                mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
-
-                if [ -z "${SSH_PRIVATE_KEY}" ]; then
-                    echo "❌ ERREUR: SSH_PRIVATE_KEY est vide"
-                    exit 1
-                fi
-
-                echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa
-                chown -R $(whoami):$(whoami) ~/.ssh
-
-                ssh-keyscan -H 192.168.182.200 > ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
-                echo "✅ Configuration de la clé SSH terminée."
-            '''
-        }
-    }
-}
-
-stage('Ajouter clé SSH du serveur distant') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Ajout de la clé SSH du serveur distant"
-                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
-            '''
-        }
-    }
-}
-
-stage('Vérifier accès SSH') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Vérification de l'accès SSH"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo ✅ Connexion SSH réussie"
-            '''
-        }
-    }
-}
-
-stage('Vérifier accès à Docker') {
-    steps {
-        script {
-            sh '''
-                set -euxo pipefail
-                echo "Vérification des permissions Docker"
-                if [ ! -S /var/run/docker.sock ]; then
-                    echo "❌ Erreur: Docker n'est pas accessible."
-                    exit 1
-                fi
-                ls -l /var/run/docker.sock
-                docker info || { echo "❌ Erreur: Docker ne répond pas."; exit 1; }
-                echo "✅ Docker est accessible."
-            '''
-        }
-    }
-}
-*/
 stage('Déploiement') {
     steps {
         script {
             sh '''
                 set -euxo pipefail
                 echo "Déploiement de l'application"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 << 'EOF'
-set -euxo pipefail
-echo "🛠️ Arrêt et suppression de l'ancien conteneur"
-docker stop aston_villa || true
-docker rm aston_villa || true
-echo "🚀 Lancement du nouveau conteneur"
-docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
-echo "✅ Déploiement terminé avec succès."
-EOF
-            '''
-        }
-    }
-}
-
-/*stage('Debug SSH Key') {
-    steps {
-        script {
-            sh '''
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 << EOF
                 set -euxo pipefail
-                echo "Debug SSH Key: contenu de la clé privée"
-                ls -l ~/.ssh/id_rsa
-                cat ~/.ssh/id_rsa || echo "❌ Impossible de lire ~/.ssh/id_rsa"
-
-                echo "Contenu de authorized_keys sur la machine distante:"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "cat ~/.ssh/authorized_keys" || echo "❌ Impossible d'accéder à authorized_keys"
+                echo "🛠️ Arrêt et suppression de l'ancien conteneur"
+                docker stop aston_villa || true
+                docker rm aston_villa || true
+                echo "🚀 Lancement du nouveau conteneur"
+                docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
+                echo "✅ Déploiement terminé avec succès."
+                EOF
             '''
         }
     }
 }
-*/
+
+
 
     }
 
