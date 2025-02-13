@@ -111,20 +111,24 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
 
             // Pousser l'image Docker
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
+            sh " fin push"
         }
     }
 }
-stage('Vérifier utilisateur et permissions') {
+pipeline {
+    agent any
+
+    stages {
+        stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        set -e
                         echo "Utilisateur courant: $(whoami)"
-                        echo "Groupes de l'utilisateur: $(groups || echo 'Erreur: impossible d'afficher les groupes')"
+                        echo "Groupes de l'utilisateur:"
+                        groups
                         echo "Vérification des permissions sur /home/jenkins"
-                        ls -ld /home/jenkins || echo "⚠️ Dossier non trouvé"
-                        ls -l /home/jenkins/.ssh/id_rsa || echo "⚠️ Clé SSH non trouvée"
-                        echo "✅ Vérification terminée."
+                        ls -ld /home/jenkins || true
+                        ls -l /home/jenkins/.ssh/id_rsa || true
                     '''
                 }
             }
@@ -134,18 +138,30 @@ stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        set -e
-                        echo "Configuration de la clé SSH"
                         mkdir -p ~/.ssh
+                        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
                         chmod 700 ~/.ssh
-                        unset HISTFILE  # Empêcher l'enregistrement dans l'historique
-                        cat <<EOF > ~/.ssh/id_rsa
-                        ${SSH_PRIVATE_KEY}
-                        EOF
                         chmod 600 ~/.ssh/id_rsa
-                        ssh-keyscan -t rsa -H 192.168.182.200 > ~/.ssh/known_hosts
+                        chown -R $(whoami):$(whoami) ~/.ssh
+                    '''
+                    sh '''
+                        export HOME=/home/vagrant
+                        mkdir -p $HOME/.ssh
+                        echo "${SSH_PRIVATE_KEY}" > $HOME/.ssh/id_rsa
+                        chmod 700 $HOME/.ssh
+                        chmod 600 $HOME/.ssh/id_rsa
+                        ssh-keyscan -H 192.168.182.200 >> $HOME/.ssh/known_hosts
+                    '''
+                }
+            }
+        }
+
+        stage('Ajouter clé SSH du serveur distant') {
+            steps {
+                script {
+                    sh '''
+                        ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
                         chmod 644 ~/.ssh/known_hosts
-                        echo "✅ Configuration de la clé SSH terminée."
                     '''
                 }
             }
@@ -155,9 +171,7 @@ stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        set -e
-                        echo "Vérification de l'accès SSH"
-                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo ✅ Connexion SSH réussie"
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
                     '''
                 }
             }
@@ -167,15 +181,9 @@ stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        set -e
                         echo "Vérification des permissions Docker"
-                        if [ ! -S /var/run/docker.sock ]; then
-                            echo "❌ Erreur: Docker n'est pas accessible."
-                            exit 1
-                        fi
                         ls -l /var/run/docker.sock
-                        docker info || { echo "❌ Erreur: Docker ne répond pas."; exit 1; }
-                        echo "✅ Docker est accessible."
+                        docker info
                     '''
                 }
             }
@@ -185,21 +193,25 @@ stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        set -e
-                        echo "Déploiement de l'application"
-                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 << 'EOF'
-                            set -e
-                            echo "🛠️ Arrêt et suppression de l'ancien conteneur"
-                            docker stop aston_villa || true
-                            docker rm aston_villa || true
-                            echo "🚀 Lancement du nouveau conteneur"
-                            docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
-                            echo "✅ Déploiement terminé avec succès."
-                        EOF
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
+                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
                     '''
                 }
             }
+   
         }
+        stage('Debug SSH Key') {
+    steps {
+        script {
+            sh '''
+                echo "Contenu de la clé SSH privée:"
+                cat ~/.ssh/id_rsa
+                echo "Contenu de authorized_keys sur la machine distante:"
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "cat ~/.ssh/authorized_keys"
+            '''
+        }
+    }
+}
 
     }
 
