@@ -124,6 +124,7 @@ stage('Vérifier permissions SSH') {
         }
     }
 }
+
 stage('Configurer la clé SSH') {
     steps {
         script {
@@ -151,6 +152,19 @@ stage('Ajouter clé SSH du serveur distant') {
         }
     }
 }
+stage('Correction permissions SSH') {
+    steps {
+        script {
+            sh '''
+                sudo mkdir -p /home/jenkins/.ssh
+                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+                sudo chmod 700 /home/jenkins/.ssh
+                sudo chmod 600 /home/jenkins/.ssh/id_rsa
+            '''
+        }
+    }
+}
+
 stage('Déploiement') {
     steps {
         script {
