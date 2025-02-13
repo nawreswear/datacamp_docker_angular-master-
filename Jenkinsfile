@@ -9,6 +9,7 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
         DOCKER_TAG = '' 
         SSH_KEY_PATH = '/home/jenkins/.ssh/id_rsa'
+        SSH_PUBLIC_KEY='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2n4UBd6kbm2n4kurgS3YcaSVUi06JmEeVEVU+Qutad5VAZa98/EY35X76zlAxvBSApUMWSKYsW8dchEs0vTZkisvuyiecFsvjMaE3A0+4tFZIHRPvTiotHP0swOhzR32DbVpV4R8ud9HjbfyE3humccX/XWG07/qMfbeMkaVME07A5bVyVUN3ea+ql1nHod2iGtIX2Qm/zMEsgCQ0Nlm3nXLSV4MEsD9ntaO95rIDF84xRVn4k4Ef/fn92J/ryYegeS9hq2O4LNiwk54jbo4mUhHC/tlSbKN0ym9Ek5QKDSjG7eUVzrjjJQXx7hYVTUHwYfRz1RjQ99kjHayD9dawXbIUQ/gqURFrzbVpBYpBFZCq27xRt2uIK7NDr47aEf+qHj4NPn079oEcoOdmf8da9XqWOreW20RYF6TjP2GZlGZrFo0Kd1g1OobJPKt7DDi47He06g+ZZB5oLIC62BeI07MHUedYwRxPZZaA39XRqNQSkfs8BgWV1eKpPEUHQiAhqxo6lS8evbz66cYvOamtzvBQHSClZg2iHRAK5pHT4wOmPjK5dj8fpPDmqP/kEf5wEPiptnATo7ShczHel/C410o/XCKbA8nBAXMnlGf+EnVY+n5mjmDoO98ylqJd8kkAXZ2FTQyvS9/ZD4f6vuEC+NuBPjE26N1YD7KZn6naSQ== vagrant@ubuntu-focal'
         SSH_PRIVATE_KEY = '''-----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAgEA4fMgbmHnuX+Qe9PGaKiq16cSFqFsCmexYJgjIzyzY2iQSbSK0SJE
@@ -147,8 +148,8 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                # Ajout de la clé publique sur le serveur distant avec sudo
-                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && echo \"$(cat)\" | sudo tee -a ~/.ssh/authorized_keys > /dev/null"
+                # Ajout de la clé publique sur le serveur distant
+                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
                 if [ $? -ne 0 ]; then
                     echo "❌ L'ajout de la clé publique au fichier authorized_keys a échoué."
                     exit 1
@@ -180,6 +181,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
    /* stage('Configurer la clé SSH') {
     steps {
