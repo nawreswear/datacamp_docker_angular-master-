@@ -88,42 +88,31 @@ stage('Check SSH Key Existence and Permissions') {
         script {
             // Vérifier que la clé existe et que Jenkins peut y accéder
             if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
-                echo "Error: SSH key file '/home/jenkins/.ssh/id_rsa' not found!"
+                echo "Erreur : La clé SSH '/home/jenkins/.ssh/id_rsa' est introuvable !"
                 currentBuild.result = 'FAILURE'
                 return
             }
 
-            // Vérifier les permissions du fichier id_rsa
+            // Vérifier et ajuster les permissions uniquement si nécessaire
             sh '''
-                ls -l /home/jenkins/.ssh/id_rsa
-                sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-            '''
-        }
-    }
-}
-
-stage('Docker Access Check') {
-    steps {
-        script {
-            // Vérification de l'accès Docker pour Jenkins
-            sh '''
-                sudo -u jenkins docker info
-                if [ $? -ne 0 ]; then
-                    echo "Error: User 'jenkins' cannot access Docker."
-                    exit 1
+                ACTUAL_PERMISSIONS=$(stat -c %a /home/jenkins/.ssh/id_rsa)
+                if [ "$ACTUAL_PERMISSIONS" != "600" ]; then
+                    chmod 600 /home/jenkins/.ssh/id_rsa
                 fi
             '''
         }
     }
 }
-
 stage('Deployment') {
     steps {
         script {
-            // Vérification de la clé SSH avant déploiement
             sh '''
-                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca
+                # Vérifier la clé avant de tenter la connexion
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
+                
+                # Lancer le conteneur si la connexion fonctionne
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca"
             '''
         }
     }
