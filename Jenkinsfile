@@ -188,7 +188,7 @@ stage('Déploiement') {
 
                 # Connexion SSH à la machine distante avec débogage
                 echo "🔑 Tentative de connexion SSH à vagrant@192.168.182.200"
-                ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
+                ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
                 #!/bin/bash -e
 
                 # Vérification de l'installation de Docker
