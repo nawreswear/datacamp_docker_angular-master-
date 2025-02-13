@@ -114,87 +114,68 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
- stage('Vérifier utilisateur et permissions') {
-    steps {
-        script {
-            sh '''
-                echo "Utilisateur courant: $(whoami)"
-                echo "Groupes de l'utilisateur:"
-                groups
-                echo "Vérification des permissions sur /home/jenkins"
-                ls -ld /home/jenkins || true
-                ls -l /home/jenkins/.ssh/id_rsa || true
-            '''
+        stage('Vérifier utilisateur et permissions') {
+            steps {
+                script {
+                    sh '''
+                        echo "Utilisateur courant: $(whoami)"
+                        echo "Groupes de l'utilisateur:"
+                        groups
+                        echo "Vérification des permissions sur /home/jenkins"
+                        ls -ld /home/jenkins || true
+                        ls -l /home/jenkins/.ssh/id_rsa || true
+                    '''
+                }
+            }
         }
-    }
-}
 
-stage('Configurer la clé SSH') {
-    steps {
-        script {
-            sh '''
-                mkdir -p ~/.ssh
-                echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
-                chmod 700 ~/.ssh
-                chmod 600 ~/.ssh/id_rsa
-                chown -R $(whoami):$(whoami) ~/.ssh
-            '''
-            sh '''
-                export HOME=/home/vagrant
-                mkdir -p $HOME/.ssh
-                echo "${SSH_PRIVATE_KEY}" > $HOME/.ssh/id_rsa
-                chmod 700 $HOME/.ssh
-                chmod 600 $HOME/.ssh/id_rsa
-                ssh-keyscan -H 192.168.182.200 >> $HOME/.ssh/known_hosts
-            '''
+        stage('Configurer la clé SSH') {
+            steps {
+                script {
+                    sh '''
+                        mkdir -p ~/.ssh
+                        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+                        chmod 700 ~/.ssh
+                        chmod 600 ~/.ssh/id_rsa
+                        ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                        chmod 644 ~/.ssh/known_hosts
+                    '''
+                }
+            }
         }
-    }
-}
 
-stage('Ajouter clé SSH du serveur distant') {
-    steps {
-        script {
-            sh '''
-                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
-            '''
+        stage('Vérifier accès SSH') {
+            steps {
+                script {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
+                    '''
+                }
+            }
         }
-    }
-}
 
-stage('Vérifier accès SSH') {
-    steps {
-        script {
-            sh '''
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
-            '''
+        stage('Vérifier accès à Docker') {
+            steps {
+                script {
+                    sh '''
+                        echo "Vérification des permissions Docker"
+                        ls -l /var/run/docker.sock
+                        docker info
+                    '''
+                }
+            }
         }
-    }
-}
 
-stage('Vérifier accès à Docker') {
-    steps {
-        script {
-            sh '''
-                echo "Vérification des permissions Docker"
-                ls -l /var/run/docker.sock
-                docker info
-            '''
+        stage('Déploiement') {
+            steps {
+                script {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
+                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
+                    '''
+                }
+            }
         }
-    }
-}
-
-stage('Déploiement') {
-    steps {
-        script {
-            sh '''
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
-                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
-            '''
-        }
-    }
-}
-
 
 
     }
