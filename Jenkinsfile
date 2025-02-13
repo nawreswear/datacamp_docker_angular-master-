@@ -138,17 +138,37 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-    stage('Déploiement') {
+stage('Déploiement') {
     steps {
         script {
             sh '''
                 #!/bin/bash -e
                 echo "🚀 Déploiement de l'application"
 
-                # SSH connection to remote server
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
+                # Vérification si la clé privée SSH est fournie et l'ajout
+                if [ -z "$SSH_PRIVATE_KEY" ]; then
+                    echo "❌ La clé privée SSH n'est pas fournie dans la variable d'environnement !"
+                    exit 1
+                fi
+
+                echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+                chmod 600 ~/.ssh/id_rsa
+                echo "✅ Clé SSH ajoutée et permissions correctement configurées."
+
+                # Connexion SSH à la machine distante avec débogage
+                echo "🔑 Tentative de connexion SSH à vagrant@192.168.182.200"
+                ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
                 #!/bin/bash -e
 
+                # Vérification de l'installation de Docker
+                echo "🔍 Vérification de Docker..."
+                if ! command -v docker &> /dev/null; then
+                    echo "❌ Docker n'est pas installé sur cette machine !"
+                    exit 1
+                fi
+                echo "✅ Docker est installé."
+
+                # Vérification du conteneur existant
                 echo "🔍 Vérification du conteneur existant..."
                 if docker ps -a --format '{{.Names}}' | grep -q "^aston_villa$"; then
                     echo "🛑 Arrêt et suppression du conteneur existant"
@@ -158,6 +178,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                     echo "✅ Aucun conteneur existant à supprimer"
                 fi
 
+                # Démarrage du nouveau conteneur
                 echo "🚀 Démarrage du nouveau conteneur..."
                 docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG} || {
                     echo "❌ Erreur: Échec du lancement du conteneur"
