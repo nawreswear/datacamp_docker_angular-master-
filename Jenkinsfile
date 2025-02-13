@@ -86,19 +86,19 @@ stage('Vérification de la clé SSH') {
 stage('Check SSH Key Existence and Permissions') {
     steps {
         script {
-            def sshKeyPath = '/home/jenkins/.ssh/id_rsa'
-            if (!fileExists(sshKeyPath)) {
-                echo "Error: SSH key file '${sshKeyPath}' not found!"
+            // Vérifier que la clé existe et que Jenkins peut y accéder
+            if (!fileExists('/home/jenkins/.ssh/id_rsa')) {
+                echo "Error: SSH key file '/home/jenkins/.ssh/id_rsa' not found!"
                 currentBuild.result = 'FAILURE'
                 return
             }
-            // Check permissions - no sudo needed here, Jenkins user should have correct permissions already
-            def permissions = sh(script: "stat -c '%a' ${sshKeyPath}", returnStdout: true).trim()
-            if (permissions != '600') {
-                echo "Error: Incorrect permissions on '${sshKeyPath}'. Expected 600, found ${permissions}"
-                currentBuild.result = 'FAILURE'
-                return
-            }
+
+            // Vérifier les permissions du fichier id_rsa
+            sh '''
+                ls -l /home/jenkins/.ssh/id_rsa
+                sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+            '''
         }
     }
 }
@@ -106,31 +106,25 @@ stage('Check SSH Key Existence and Permissions') {
 stage('Docker Access Check') {
     steps {
         script {
-            // Use a dedicated user with sudo access for Docker commands
-            def dockerCheckResult = sh(script: "sudo -u docker_user docker info > /dev/null 2>&1", returnStatus: true)
-            if (dockerCheckResult != 0) {
-                echo "Error: User 'docker_user' cannot access Docker."
-                currentBuild.result = 'FAILURE'
-                return
-            }
+            // Vérification de l'accès Docker pour Jenkins
+            sh '''
+                sudo -u jenkins docker info
+                if [ $? -ne 0 ]; then
+                    echo "Error: User 'jenkins' cannot access Docker."
+                    exit 1
+                fi
+            '''
         }
     }
 }
 
-
 stage('Deployment') {
     steps {
         script {
-            // No sudo needed if jenkins is in the docker group
-            def deploymentResult = sh(script: """
-                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 'docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca'
-            """, returnStatus: true)
-
-            if (deploymentResult != 0) {
-                echo "Error during deployment: ${deploymentResult}"
-                currentBuild.result = 'FAILURE'
-                return
-            }
+            // Vérification de la clé SSH avant déploiement
+            sh '''
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca
+            '''
         }
     }
 }
