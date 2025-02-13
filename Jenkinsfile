@@ -126,10 +126,8 @@ stage('Configurer la clé SSH') {
                 mkdir -p ~/.ssh
                 chmod 700 ~/.ssh
 
-                # Afficher les 5 premières lignes de la clé privée pour déboguer
-                echo "$SSH_PRIVATE_KEY" | head -n 5
-
-                # Réécriture correcte de la clé privée
+                # Ne pas afficher la clé privée dans les logs
+                # Réécriture correcte de la clé privée sans retour chariot
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
@@ -149,11 +147,6 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                # Afficher les permissions et propriétaire de la clé privée
-                ls -l ~/.ssh/id_rsa
-
-                echo "✅ Clé SSH configurée avec succès."
-
                 # Test de connexion SSH pour vérifier si tout fonctionne
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
                 if [ $? -ne 0 ]; then
@@ -168,11 +161,12 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                echo "✅ Conteneur Docker exécuté avec succès."
+                echo "✅ Clé SSH et conteneur Docker configurés avec succès."
             '''
         }
     }
 }
+
 
    /* stage('Configurer la clé SSH') {
     steps {
