@@ -238,27 +238,34 @@ stage('Deploy via SSH') {
     steps {
         script {
             sh '''
-            # Vérifier si la clé SSH existe
+            # Vérifier si le répertoire .ssh existe et si la clé SSH existe
+            if [ ! -d /var/lib/jenkins/.ssh ]; then
+                echo "Le répertoire .ssh n'existe pas, création du répertoire."
+                sudo mkdir -p /var/lib/jenkins/.ssh
+                sudo chown -R jenkins:jenkins /var/lib/jenkins/.ssh
+            fi
+            
             if [ -f /var/lib/jenkins/.ssh/id_rsa ]; then
                 echo "Clé SSH trouvée, suppression de la clé existante."
-                rm -f /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub
+                sudo rm -f /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub
             else
                 echo "Aucune clé SSH existante, génération d'une nouvelle clé."
                 # Générer une nouvelle clé SSH si elle n'existe pas
-                ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
+                sudo -u jenkins ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
             fi
             
             # Copier la clé publique vers la machine distante
             echo "Copie de la clé publique sur la machine distante"
-            ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
+            sudo -u jenkins ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
 
             # Connexion SSH sans mot de passe
             echo "Connexion SSH à la machine distante"
-            ssh -vvv -o StrictHostKeyChecking=no jenkins@192.168.182.200 "echo 'Connexion réussie'"
+            sudo -u jenkins ssh -vvv -o StrictHostKeyChecking=no jenkins@192.168.182.200 "echo 'Connexion réussie'"
             '''
         }
     }
 }
+
 
 
 
