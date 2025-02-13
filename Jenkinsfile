@@ -8,6 +8,7 @@ pipeline {
     environment {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
         DOCKER_TAG = '' 
+        SSH_KEY_PATH = '/home/jenkins/.ssh/id_rsa'
         SSH_PRIVATE_KEY = '''-----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAgEA4fMgbmHnuX+Qe9PGaKiq16cSFqFsCmexYJgjIzyzY2iQSbSK0SJE
@@ -114,62 +115,46 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
     }
 }
 
-        stage('Vérification de la clé SSH') {
+     stage('Vérification de la clé SSH') {
             steps {
                 script {
-                    // Vérification de l'existence de la clé SSH privée dans l'environnement
-                    if (SSH_PRIVATE_KEY == '') {
-                        echo 'Clé SSH manquante.'
-                        currentBuild.result = 'FAILURE'
-                        return
+                    if (!fileExists(env.SSH_KEY_PATH)) {
+                        error 'Clé SSH manquante.'
                     } else {
                         echo 'Clé SSH trouvée.'
                     }
                 }
             }
         }
-
-   stage('Check SSH Key Existence and Permissions') {
-    steps {
-        script {
-            sh '''
-                # Assurer que Jenkins a les permissions nécessaires
-                sudo mkdir -p /home/jenkins/.ssh
-                sudo chmod 700 /home/jenkins/.ssh
-                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-                
-                # Supprimer l'ancienne clé si elle existe
-                sudo rm -f /home/jenkins/.ssh/id_rsa
-                
-                # Écrire la nouvelle clé SSH
-                echo "$SSH_PRIVATE_KEY" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
-                
-                # Appliquer les bonnes permissions
-                sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-                
-                # Vérification des permissions
-                ls -l /home/jenkins/.ssh/id_rsa
-            '''
+        
+        stage('Check SSH Key Existence and Permissions') {
+            steps {
+                script {
+                    sh '''
+                        sudo mkdir -p /home/jenkins/.ssh
+                        sudo chmod 700 /home/jenkins/.ssh
+                        sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+                        sudo rm -f /home/jenkins/.ssh/id_rsa
+                        echo "${SSH_PRIVATE_KEY}" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
+                        sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                        sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+                        ls -l /home/jenkins/.ssh/id_rsa
+                    '''
+                }
+            }
         }
-    }
-}
-
-stage('Deployment') {
-    steps {
-        script {
-            sh '''
-                # Vérifier la connexion SSH
-                sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
-
-                # Lancer le conteneur Docker
-                sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
-                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca"
-            '''
+        
+        stage('Deployment') {
+            steps {
+                script {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
+                    '''
+                }
+            }
         }
-    }
-}
-
 
     }
 
