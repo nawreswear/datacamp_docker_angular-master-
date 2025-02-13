@@ -246,7 +246,12 @@ stage('Deploy via SSH') {
                 echo "Aucune clé SSH existante."
             fi
             
-            # Établir la connexion SSH sans clé (accès direct avec mot de passe ou autre méthode)
+            # Copier la clé publique vers la machine distante
+            echo "Copie de la clé publique sur la machine distante"
+            ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
+
+            # Connexion SSH sans mot de passe
+            echo "Connexion SSH à la machine distante"
             ssh -vvv -o StrictHostKeyChecking=no jenkins@192.168.182.200 "echo 'Connexion réussie'"
             '''
         }
