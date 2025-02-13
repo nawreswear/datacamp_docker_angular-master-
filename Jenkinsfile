@@ -136,7 +136,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                 echo "✅ Clé SSH configurée avec succès."
                 # Lancer le déploiement Docker
                 echo "🚀 Déploiement de l'application via Docker"
-                docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}
+                sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG}
 
                 echo "✅ Déploiement Docker réussi."
             '''
