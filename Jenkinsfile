@@ -114,17 +114,18 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-        stage('Vérifier utilisateur et permissions') {
+stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
+                        set -e
                         echo "Utilisateur courant: $(whoami)"
                         echo "Groupes de l'utilisateur:"
                         groups
                         echo "Vérification des permissions sur /home/jenkins"
                         ls -ld /home/jenkins || true
                         ls -l /home/jenkins/.ssh/id_rsa || true
-                        echo "Vérifier utilisateur et permissions"
+                        echo "Vérification terminée."
                     '''
                 }
             }
@@ -134,14 +135,15 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     sh '''
-                     echo "Configurer la clé SSH"
+                        set -e
+                        echo "Configuration de la clé SSH"
                         mkdir -p ~/.ssh
-                        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
                         chmod 700 ~/.ssh
+                        echo -e "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
                         chmod 600 ~/.ssh/id_rsa
-                        ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                        ssh-keyscan -t rsa -H 192.168.182.200 >> ~/.ssh/known_hosts
                         chmod 644 ~/.ssh/known_hosts
-                        echo "Configurer la clé SSH"
+                        echo "Configuration de la clé SSH terminée."
                     '''
                 }
             }
@@ -151,9 +153,10 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     sh '''
-                     echo "Vérifier accès SSH"
-                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
-                     echo "Vérifier accès SSH"
+                        set -e
+                        echo "Vérification de l'accès SSH"
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion SSH réussie"
+                        echo "Connexion SSH vérifiée avec succès."
                     '''
                 }
             }
@@ -163,10 +166,15 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     sh '''
+                        set -e
                         echo "Vérification des permissions Docker"
+                        if [ ! -S /var/run/docker.sock ]; then
+                            echo "Erreur: Docker n'est pas accessible."
+                            exit 1
+                        fi
                         ls -l /var/run/docker.sock
                         docker info
-                        echo "Vérification des permissions Docker"
+                        echo "Docker est accessible."
                     '''
                 }
             }
@@ -176,15 +184,16 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     sh '''
-                    echo "Déploiement"
+                        set -e
+                        echo "Déploiement de l'application"
                         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
-                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
-                    echo "Déploiement"
+                            "docker stop aston_villa || true && docker rm aston_villa || true && \
+                            docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
+                        echo "Déploiement terminé avec succès."
                     '''
                 }
             }
         }
-
 
     }
 
