@@ -115,7 +115,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-  stage('Vérifier utilisateur et permissions') {
+  /*stage('Vérifier utilisateur et permissions') {
     steps {
         script {
             sh '''
@@ -199,7 +199,7 @@ stage('Vérifier accès à Docker') {
         }
     }
 }
-
+*/
 stage('Déploiement') {
     steps {
         script {
@@ -220,7 +220,7 @@ EOF
     }
 }
 
-stage('Debug SSH Key') {
+/*stage('Debug SSH Key') {
     steps {
         script {
             sh '''
@@ -235,7 +235,7 @@ stage('Debug SSH Key') {
         }
     }
 }
-
+*/
 
     }
 
