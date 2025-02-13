@@ -114,6 +114,16 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
+stage('Vérifier permissions SSH') {
+    steps {
+        script {
+            sh '''
+                ls -l /home/jenkins/.ssh/id_rsa
+                whoami
+            '''
+        }
+    }
+}
 stage('Configurer la clé SSH') {
     steps {
         script {
@@ -121,22 +131,20 @@ stage('Configurer la clé SSH') {
                 sudo mkdir -p /home/jenkins/.ssh
                 sudo chmod 700 /home/jenkins/.ssh
                 sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-                
-                # Écriture de la clé SSH directement depuis la variable d'environnement
+
                 echo "${SSH_PRIVATE_KEY}" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
-                
                 sudo chmod 600 /home/jenkins/.ssh/id_rsa
                 sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+                sudo chmod 644 /home/jenkins/.ssh/known_hosts || true
             '''
         }
     }
 }
-        
-        stage('Déploiement') {
+stage('Déploiement') {
     steps {
         script {
             sh '''
-                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
                     "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
             '''
         }
