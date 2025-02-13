@@ -115,7 +115,38 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
- stage('Configurer la clé SSH') {
+stage('Configurer la clé SSH') {
+    steps {
+        script {
+            sh '''
+                #!/bin/bash -e
+                echo "🔑 Configuration de la clé SSH"
+
+                # Créer le répertoire ~/.ssh s'il n'existe pas
+                mkdir -p ~/.ssh
+                chmod 700 ~/.ssh
+
+                # Réécriture correcte de la clé privée
+                echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+                chmod 600 ~/.ssh/id_rsa
+
+                # Ajout de l'hôte distant aux clés connues
+                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                chmod 644 ~/.ssh/known_hosts
+
+                echo "✅ Clé SSH configurée avec succès."
+
+                # Test de connexion SSH pour vérifier si tout fonctionne
+                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
+
+                # Exécution de la commande Docker avec le tag spécifié
+                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
+            '''
+        }
+    }
+}
+
+   /* stage('Configurer la clé SSH') {
     steps {
         script {
             sh '''
@@ -134,17 +165,12 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                 chmod 644 ~/.ssh/known_hosts
 
                 echo "✅ Clé SSH configurée avec succès."
-
-                # Vérifier la connexion SSH avant d'exécuter Docker
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo '🔗 Connexion SSH réussie'"
-
-                # Lancer le conteneur Docker
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "sudo docker run -t nawreswear/aston_villa:${DOCKER_TAG}"
+                sh "ssh vagrant@192.168.182.200"
+                sh "ssh vagrant@192.168.182.200 'sudo docker run “nawreswear/aston_villa:${DOCKER_TAG}"’”
             '''
         }
     }
-}
-
+}*/
 /*stage('Déploiement') {
     steps {
         script {
