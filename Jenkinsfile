@@ -129,38 +129,46 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             }
         }
 
-       /* stage('Check SSH Key Existence and Permissions') {
-            steps {
-                script {
-                    // Écrire la clé SSH dans le répertoire approprié
-                    sh '''
-                        echo "$SSH_PRIVATE_KEY" > /home/jenkins/.ssh/id_rsa
-                        chmod 600 /home/jenkins/.ssh/id_rsa
-                        chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-                    '''
-                    // Vérification de la présence de la clé
-                    sh '''
-                        ls -l /home/jenkins/.ssh/id_rsa
-                    '''
-                }
-            }
-        }*/
+     stage('Check SSH Key Existence and Permissions') {
+    steps {
+        script {
+            // Écrire la clé SSH dans le répertoire approprié
+            sh '''
+                # Créer le répertoire .ssh si nécessaire
+                mkdir -p /home/jenkins/.ssh
 
-        stage('Deployment') {
-            steps {
-                script {
-                    // Connexion SSH et déploiement avec la clé privée
-                    sh '''
-                        # Vérifier la connexion SSH avec la clé
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
+                # Écrire la clé privée dans le fichier id_rsa
+                echo "$SSH_PRIVATE_KEY" > /home/jenkins/.ssh/id_rsa
 
-                        # Lancer le conteneur si la connexion fonctionne
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
-                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca"
-                    '''
-                }
-            }
+                # Appliquer les bonnes permissions et propriétés
+                chmod 700 /home/jenkins/.ssh
+                chmod 600 /home/jenkins/.ssh/id_rsa
+                chown -R jenkins:jenkins /home/jenkins/.ssh
+            '''
+            // Vérification de la présence de la clé
+            sh '''
+                ls -l /home/jenkins/.ssh/id_rsa
+            '''
         }
+    }
+}
+
+stage('Deployment') {
+    steps {
+        script {
+            // Connexion SSH et déploiement avec la clé privée
+            sh '''
+                # Vérifier la connexion SSH avec la clé
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
+
+                # Lancer le conteneur si la connexion fonctionne
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:8ad33ca"
+            '''
+        }
+    }
+}
+
     }
 
 }
