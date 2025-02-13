@@ -130,17 +130,39 @@ stage('Configurer la clé SSH') {
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
+                # Vérification si la clé privée est correctement configurée
+                if [ ! -f ~/.ssh/id_rsa ]; then
+                    echo "❌ La clé privée SSH n'a pas été configurée correctement."
+                    exit 1
+                fi
+
                 # Ajout de l'hôte distant aux clés connues
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
                 chmod 644 ~/.ssh/known_hosts
+
+                # Vérification si le fichier known_hosts existe après ajout de l'hôte
+                if [ ! -f ~/.ssh/known_hosts ]; then
+                    echo "❌ Le fichier known_hosts n'a pas été configuré correctement."
+                    exit 1
+                fi
 
                 echo "✅ Clé SSH configurée avec succès."
 
                 # Test de connexion SSH pour vérifier si tout fonctionne
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
+                if [ $? -ne 0 ]; then
+                    echo "❌ La connexion SSH a échoué."
+                    exit 1
+                fi
 
                 # Exécution de la commande Docker avec le tag spécifié
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
+                if [ $? -ne 0 ]; then
+                    echo "❌ L'exécution du conteneur Docker a échoué."
+                    exit 1
+                fi
+
+                echo "✅ Conteneur Docker exécuté avec succès."
             '''
         }
     }
