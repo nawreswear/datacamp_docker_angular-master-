@@ -140,6 +140,17 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+stage('Ajouter clé SSH du serveur distant') {
+    steps {
+        script {
+            sh '''
+                ssh-keyscan -H 192.168.182.200 | sudo tee -a /home/jenkins/.ssh/known_hosts > /dev/null
+                sudo chmod 644 /home/jenkins/.ssh/known_hosts
+                sudo chown jenkins:jenkins /home/jenkins/.ssh/known_hosts
+            '''
+        }
+    }
+}
 stage('Déploiement') {
     steps {
         script {
