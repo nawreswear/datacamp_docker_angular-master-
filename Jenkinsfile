@@ -114,12 +114,15 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-stage('Vérifier permissions SSH') {
+ stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
                     sh '''
-                        whoami
-                        ls -ld /home/jenkins/.ssh || true
+                        echo "Utilisateur courant: $(whoami)"
+                        echo "Groupes de l'utilisateur:"
+                        groups
+                        echo "Vérification des permissions sur /home/jenkins"
+                        ls -ld /home/jenkins || true
                         ls -l /home/jenkins/.ssh/id_rsa || true
                     '''
                 }
@@ -130,12 +133,11 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        sudo rm -rf /home/jenkins/.ssh
-                        mkdir -p /home/jenkins/.ssh
-                        echo "${SSH_PRIVATE_KEY}" > /home/jenkins/.ssh/id_rsa
-                        chmod 700 /home/jenkins/.ssh
-                        chmod 600 /home/jenkins/.ssh/id_rsa
-                        chown -R jenkins:jenkins /home/jenkins/.ssh
+                        mkdir -p ~/.ssh
+                        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+                        chmod 700 ~/.ssh
+                        chmod 600 ~/.ssh/id_rsa
+                        chown -R $(whoami):$(whoami) ~/.ssh
                     '''
                 }
             }
@@ -145,8 +147,8 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        ssh-keyscan -H 192.168.182.200 >> /home/jenkins/.ssh/known_hosts
-                        chmod 644 /home/jenkins/.ssh/known_hosts
+                        ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                        chmod 644 ~/.ssh/known_hosts
                     '''
                 }
             }
@@ -156,7 +158,19 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
+                    '''
+                }
+            }
+        }
+
+        stage('Vérifier accès à Docker') {
+            steps {
+                script {
+                    sh '''
+                        echo "Vérification des permissions Docker"
+                        ls -l /var/run/docker.sock
+                        docker info
                     '''
                 }
             }
@@ -166,7 +180,7 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 \
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
                             "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
                     '''
                 }
