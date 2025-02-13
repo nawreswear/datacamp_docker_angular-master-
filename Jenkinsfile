@@ -111,7 +111,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
 
             // Pousser l'image Docker
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
-            sh " fin push"
+            //sh " fin push"
         }
     }
 }
