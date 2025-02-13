@@ -234,21 +234,29 @@ stage('Setup SSH') {
                 }
             }
         }
-        
-   stage('Deploy via SSH') {
+ stage('Deploy via SSH') {
     steps {
         script {
             sh '''
+            # Vérifier que le fichier de clé privée existe
+            if [ ! -f /var/lib/jenkins/.ssh/id_rsa ]; then
+                echo "Clé privée SSH non trouvée!"
+                exit 1
+            fi
+
             # Assurer que l'agent SSH est actif
             eval "$(ssh-agent -s)"
+
+            # Ajouter la clé privée SSH
             ssh-add /var/lib/jenkins/.ssh/id_rsa
-            
+
             # Établir la connexion SSH
             ssh -vvv -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion réussie'"
             '''
         }
     }
 }
+
 
 
 
