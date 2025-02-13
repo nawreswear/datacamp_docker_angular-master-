@@ -114,47 +114,35 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
+stage('Configurer la clé SSH') {
+    steps {
+        script {
+            sh '''
+                sudo mkdir -p /home/jenkins/.ssh
+                sudo chmod 700 /home/jenkins/.ssh
+                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+                
+                # Écriture de la clé SSH directement depuis la variable d'environnement
+                echo "${SSH_PRIVATE_KEY}" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
+                
+                sudo chmod 600 /home/jenkins/.ssh/id_rsa
+                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
+            '''
+        }
+    }
+}
+        
+        stage('Déploiement') {
+    steps {
+        script {
+            sh '''
+                ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
+            '''
+        }
+    }
+}
 
-     stage('Vérification de la clé SSH') {
-            steps {
-                script {
-                    if (!fileExists(env.SSH_KEY_PATH)) {
-                        error 'Clé SSH manquante.'
-                    } else {
-                        echo 'Clé SSH trouvée.'
-                    }
-                }
-            }
-        }
-        
-        stage('Check SSH Key Existence and Permissions') {
-            steps {
-                script {
-                    sh '''
-                        sudo mkdir -p /home/jenkins/.ssh
-                        sudo chmod 700 /home/jenkins/.ssh
-                        sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-                        sudo rm -f /home/jenkins/.ssh/id_rsa
-                        echo "${SSH_PRIVATE_KEY}" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
-                        sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                        sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-                        ls -l /home/jenkins/.ssh/id_rsa
-                    '''
-                }
-            }
-        }
-        
-        stage('Deployment') {
-            steps {
-                script {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion SSH réussie'"
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
-                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
-                    '''
-                }
-            }
-        }
 
     }
 
