@@ -115,7 +115,6 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-
     stage('Configurer la clé SSH') {
     steps {
         script {
@@ -139,7 +138,38 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
+    stage('Déploiement') {
+    steps {
+        script {
+            sh '''
+                #!/bin/bash -e
+                echo "🚀 Déploiement de l'application"
 
+                # SSH connection to remote server
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
+                #!/bin/bash -e
+
+                echo "🔍 Vérification du conteneur existant..."
+                if docker ps -a --format '{{.Names}}' | grep -q "^aston_villa$"; then
+                    echo "🛑 Arrêt et suppression du conteneur existant"
+                    docker stop aston_villa || true
+                    docker rm aston_villa || true
+                else
+                    echo "✅ Aucun conteneur existant à supprimer"
+                fi
+
+                echo "🚀 Démarrage du nouveau conteneur..."
+                docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:${DOCKER_TAG} || {
+                    echo "❌ Erreur: Échec du lancement du conteneur"
+                    exit 1
+                }
+
+                echo "✅ Déploiement terminé avec succès."
+                EOF
+            '''
+        }
+    }
+}
 
 
     }
