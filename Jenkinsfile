@@ -137,7 +137,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                 # Lancer le déploiement Docker
                 #echo "🚀 Déploiement de l'application via Docker"
                 #sudo docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest
-                sudo docker logs aston_villa
+                #sudo docker logs aston_villa
                 #echo "✅ Déploiement Docker réussi."
                 sh "ssh vagrant@192.168.182.200"
                 #sh "scp target/hello-world-app-1.0-SNAPSHOT.jar vagrant@192.168.1.200:/home/vagrant"
