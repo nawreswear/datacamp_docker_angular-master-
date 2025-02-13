@@ -147,8 +147,8 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                # Ajout de la clé publique sur le serveur distant
-                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+                # Ajout de la clé publique sur le serveur distant avec sudo
+                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && echo \"$(cat)\" | sudo tee -a ~/.ssh/authorized_keys > /dev/null"
                 if [ $? -ne 0 ]; then
                     echo "❌ L'ajout de la clé publique au fichier authorized_keys a échoué."
                     exit 1
@@ -180,7 +180,6 @@ stage('Configurer la clé SSH') {
         }
     }
 }
-
 
    /* stage('Configurer la clé SSH') {
     steps {
