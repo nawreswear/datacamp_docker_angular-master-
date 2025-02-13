@@ -168,7 +168,7 @@ stage('Déploiement') {
 
                 # Ajouter la clé publique à la machine distante
                 echo "🔑 Ajout de la clé publique au fichier authorized_keys sur la machine distante"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 << 'EOF'
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa jenkins@192.168.182.200 << 'EOF'
                     #!/bin/bash -e
 
                     # Vérification et création du répertoire .ssh
@@ -187,8 +187,8 @@ stage('Déploiement') {
                 echo "✅ Hôte SSH ajouté à la liste des hôtes connus."
 
                 # Connexion SSH à la machine distante avec débogage
-                echo "🔑 Tentative de connexion SSH à vagrant@192.168.182.200"
-                ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 <<'EOF'
+                echo "🔑 Tentative de connexion SSH à jenkins@192.168.182.200"
+                ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa jenkins@192.168.182.200 <<'EOF'
                 #!/bin/bash -e
 
                 # Vérification de l'installation de Docker
