@@ -165,6 +165,7 @@ stage('Correction permissions SSH') {
     }
 }
 
+
 stage('Déploiement') {
     steps {
         script {
