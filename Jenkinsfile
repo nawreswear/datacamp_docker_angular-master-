@@ -151,9 +151,18 @@ stage('Déploiement') {
                     exit 1
                 fi
 
+                # Sauvegarde de la clé privée dans un fichier et ajustement des permissions
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
                 echo "✅ Clé SSH ajoutée et permissions correctement configurées."
+
+                # Création du dossier .ssh si nécessaire
+                mkdir -p ~/.ssh
+
+                # Ajout du serveur SSH à la liste des hôtes connus pour éviter les invites
+                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
+                chmod 644 ~/.ssh/known_hosts
+                echo "✅ Hôte SSH ajouté à la liste des hôtes connus."
 
                 # Connexion SSH à la machine distante avec débogage
                 echo "🔑 Tentative de connexion SSH à vagrant@192.168.182.200"
@@ -191,6 +200,7 @@ stage('Déploiement') {
         }
     }
 }
+
 
 
     }
