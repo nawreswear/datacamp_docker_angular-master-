@@ -147,6 +147,20 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
+                # Ajout de la clé publique sur le serveur distant
+                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+                if [ $? -ne 0 ]; then
+                    echo "❌ L'ajout de la clé publique au fichier authorized_keys a échoué."
+                    exit 1
+                fi
+
+                # Vérification si la clé publique est correctement ajoutée au fichier authorized_keys
+                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "cat ~/.ssh/authorized_keys"
+                if [ $? -ne 0 ]; then
+                    echo "❌ La clé publique n'est pas correctement ajoutée."
+                    exit 1
+                fi
+
                 # Test de connexion SSH pour vérifier si tout fonctionne
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
                 if [ $? -ne 0 ]; then
