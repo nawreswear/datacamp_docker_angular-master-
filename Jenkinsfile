@@ -126,6 +126,9 @@ stage('Configurer la clé SSH') {
                 mkdir -p ~/.ssh
                 chmod 700 ~/.ssh
 
+                # Afficher les 5 premières lignes de la clé privée pour déboguer
+                echo "$SSH_PRIVATE_KEY" | head -n 5
+
                 # Réécriture correcte de la clé privée
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
@@ -145,6 +148,9 @@ stage('Configurer la clé SSH') {
                     echo "❌ Le fichier known_hosts n'a pas été configuré correctement."
                     exit 1
                 fi
+
+                # Afficher les permissions et propriétaire de la clé privée
+                ls -l ~/.ssh/id_rsa
 
                 echo "✅ Clé SSH configurée avec succès."
 
