@@ -115,19 +115,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-stage('Vérifier les commandes') {
-    steps {
-        script {
-            sh '''
-                # Vérifier si la commande "fin" existe
-                if ! command -v fin &> /dev/null; then
-                    echo "Erreur : la commande 'fin' n'est pas installée."
-                    exit 1
-                fi
-            '''
-        }
-    }
-}
+
         stage('Déploiement') {
             steps {
                 script {
