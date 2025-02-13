@@ -255,9 +255,9 @@ stage('Deploy via SSH') {
                 sudo -u jenkins ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
             fi
             
-            # Vérifier si la clé publique existe et la copier sur la machine distante
+            # Vérifier si la clé publique existe après génération
             if [ -f /var/lib/jenkins/.ssh/id_rsa.pub ]; then
-                echo "Copie de la clé publique sur la machine distante"
+                echo "Clé publique trouvée, copie vers la machine distante."
                 sudo -u jenkins ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
             else
                 echo "Clé publique introuvable, impossible de la copier."
@@ -271,8 +271,6 @@ stage('Deploy via SSH') {
         }
     }
 }
-
-
 
 
 
