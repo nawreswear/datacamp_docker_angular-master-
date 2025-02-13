@@ -156,7 +156,7 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo Connexion réussie"
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 "echo Connexion réussie"
                     '''
                 }
             }
@@ -166,7 +166,7 @@ stage('Vérifier permissions SSH') {
             steps {
                 script {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa vagrant@192.168.182.200 \
                             "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
                     '''
                 }
