@@ -243,7 +243,9 @@ stage('Deploy via SSH') {
                 echo "Clé SSH trouvée, suppression de la clé existante."
                 rm -f /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub
             else
-                echo "Aucune clé SSH existante."
+                echo "Aucune clé SSH existante, génération d'une nouvelle clé."
+                # Générer une nouvelle clé SSH si elle n'existe pas
+                ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
             fi
             
             # Copier la clé publique vers la machine distante
@@ -257,6 +259,7 @@ stage('Deploy via SSH') {
         }
     }
 }
+
 
 
 
