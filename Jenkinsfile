@@ -115,10 +115,6 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-pipeline {
-    agent any
-
-    stages {
         stage('Vérifier utilisateur et permissions') {
             steps {
                 script {
@@ -201,17 +197,17 @@ pipeline {
    
         }
         stage('Debug SSH Key') {
-    steps {
-        script {
-            sh '''
-                echo "Contenu de la clé SSH privée:"
-                cat ~/.ssh/id_rsa
-                echo "Contenu de authorized_keys sur la machine distante:"
-                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "cat ~/.ssh/authorized_keys"
-            '''
+            steps {
+                script {
+                    sh '''
+                        echo "Contenu de la clé SSH privée:"
+                        cat ~/.ssh/id_rsa
+                        echo "Contenu de authorized_keys sur la machine distante:"
+                        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "cat ~/.ssh/authorized_keys"
+                    '''
+                }
+            }
         }
-    }
-}
 
     }
 
