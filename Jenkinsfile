@@ -138,7 +138,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-stage('Déploiement') {
+/*stage('Déploiement') {
     steps {
         script {
             sh '''
@@ -221,7 +221,29 @@ stage('Déploiement') {
             '''
         }
     }
-}
+}*/
+stage('Setup SSH') {
+            steps {
+                script {
+                    sh '''
+                    mkdir -p ~/.ssh
+                    echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+                    chmod 700 ~/.ssh
+                    chmod 600 ~/.ssh/id_rsa
+                    '''
+                }
+            }
+        }
+        
+        stage('Deploy via SSH') {
+            steps {
+                script {
+                    sh '''
+                    ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion réussie'"
+                    '''
+                }
+            }
+        }
 
 
 
