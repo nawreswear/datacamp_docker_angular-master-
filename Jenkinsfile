@@ -159,9 +159,17 @@ stage('Déploiement') {
                 # Création du dossier .ssh si nécessaire
                 mkdir -p ~/.ssh
 
-                # Ajout du serveur SSH à la liste des hôtes connus pour éviter les invites
-                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
+                # Générer la clé publique à partir de la clé privée
+                ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+
+                # Affichage de la clé publique pour s'assurer qu'elle est correcte
+                echo "🔑 Clé publique générée :"
+                cat ~/.ssh/id_rsa.pub
+
+                # Ajouter la clé publique à la machine distante
+                echo "🔑 Ajout de la clé publique au fichier authorized_keys sur la machine distante"
+                ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa vagrant@192.168.182.200 "mkdir -p ~/.ssh && echo $(cat ~/.ssh/id_rsa.pub) >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && chmod 700 ~/.ssh"
+                
                 echo "✅ Hôte SSH ajouté à la liste des hôtes connus."
 
                 # Connexion SSH à la machine distante avec débogage
