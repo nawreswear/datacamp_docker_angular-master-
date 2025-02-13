@@ -243,6 +243,7 @@ stage('Deploy via SSH') {
                 echo "Le répertoire .ssh n'existe pas, création du répertoire."
                 sudo mkdir -p /var/lib/jenkins/.ssh
                 sudo chown -R jenkins:jenkins /var/lib/jenkins/.ssh
+                sudo chmod 700 /var/lib/jenkins/.ssh  # Fix permissions on .ssh directory
             fi
             
             # Vérifier si la clé SSH existe, sinon en générer une nouvelle
