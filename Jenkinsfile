@@ -235,15 +235,21 @@ stage('Setup SSH') {
             }
         }
         
-        stage('Deploy via SSH') {
-            steps {
-                script {
-                    sh '''
-                    ssh -vvv -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion réussie'"
-                    '''
-                }
-            }
+   stage('Deploy via SSH') {
+    steps {
+        script {
+            sh '''
+            # Assurer que l'agent SSH est actif
+            eval "$(ssh-agent -s)"
+            ssh-add /var/lib/jenkins/.ssh/id_rsa
+            
+            # Établir la connexion SSH
+            ssh -vvv -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion réussie'"
+            '''
         }
+    }
+}
+
 
 
 
