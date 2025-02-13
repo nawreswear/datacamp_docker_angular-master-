@@ -245,6 +245,7 @@ stage('Deploy via SSH') {
                 sudo chown -R jenkins:jenkins /var/lib/jenkins/.ssh
             fi
             
+            # Vérifier si la clé SSH existe, sinon en générer une nouvelle
             if [ -f /var/lib/jenkins/.ssh/id_rsa ]; then
                 echo "Clé SSH trouvée, suppression de la clé existante."
                 sudo rm -f /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub
@@ -254,9 +255,14 @@ stage('Deploy via SSH') {
                 sudo -u jenkins ssh-keygen -t rsa -b 4096 -f /var/lib/jenkins/.ssh/id_rsa -N ""
             fi
             
-            # Copier la clé publique vers la machine distante
-            echo "Copie de la clé publique sur la machine distante"
-            sudo -u jenkins ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
+            # Vérifier si la clé publique existe et la copier sur la machine distante
+            if [ -f /var/lib/jenkins/.ssh/id_rsa.pub ]; then
+                echo "Copie de la clé publique sur la machine distante"
+                sudo -u jenkins ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa.pub jenkins@192.168.182.200
+            else
+                echo "Clé publique introuvable, impossible de la copier."
+                exit 1
+            fi
 
             # Connexion SSH sans mot de passe
             echo "Connexion SSH à la machine distante"
