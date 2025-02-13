@@ -139,6 +139,15 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
                         chmod 600 ~/.ssh/id_rsa
                         chown -R $(whoami):$(whoami) ~/.ssh
                     '''
+                    sh '''
+                    export HOME=/home/vagrant
+                    mkdir -p $HOME/.ssh
+                    echo "${SSH_PRIVATE_KEY}" > $HOME/.ssh/id_rsa
+                    chmod 700 $HOME/.ssh
+                    chmod 600 $HOME/.ssh/id_rsa
+                    ssh-keyscan -H 192.168.182.200 >> $HOME/.ssh/known_hosts
+                '''
+
                 }
             }
         }
