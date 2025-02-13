@@ -115,67 +115,63 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
     }
 }
 stage('Vérifier permissions SSH') {
-    steps {
-        script {
-            sh '''
-                ls -l /home/jenkins/.ssh/id_rsa
-                whoami
-            '''
+            steps {
+                script {
+                    sh '''
+                        whoami
+                        ls -ld /home/jenkins/.ssh || true
+                        ls -l /home/jenkins/.ssh/id_rsa || true
+                    '''
+                }
+            }
         }
-    }
-}
 
-stage('Configurer la clé SSH') {
-    steps {
-        script {
-            sh '''
-                sudo mkdir -p /home/jenkins/.ssh
-                sudo chmod 700 /home/jenkins/.ssh
-                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
+        stage('Configurer la clé SSH') {
+            steps {
+                script {
+                    sh '''
+                        sudo rm -rf /home/jenkins/.ssh
+                        mkdir -p /home/jenkins/.ssh
+                        echo "${SSH_PRIVATE_KEY}" > /home/jenkins/.ssh/id_rsa
+                        chmod 700 /home/jenkins/.ssh
+                        chmod 600 /home/jenkins/.ssh/id_rsa
+                        chown -R jenkins:jenkins /home/jenkins/.ssh
+                    '''
+                }
+            }
+        }
 
-                echo "${SSH_PRIVATE_KEY}" | sudo tee /home/jenkins/.ssh/id_rsa > /dev/null
-                sudo chmod 600 /home/jenkins/.ssh/id_rsa
-                sudo chown jenkins:jenkins /home/jenkins/.ssh/id_rsa
-                sudo chmod 644 /home/jenkins/.ssh/known_hosts || true
-            '''
+        stage('Ajouter clé SSH du serveur distant') {
+            steps {
+                script {
+                    sh '''
+                        ssh-keyscan -H 192.168.182.200 >> /home/jenkins/.ssh/known_hosts
+                        chmod 644 /home/jenkins/.ssh/known_hosts
+                    '''
+                }
+            }
         }
-    }
-}
-stage('Ajouter clé SSH du serveur distant') {
-    steps {
-        script {
-            sh '''
-                ssh-keyscan -H 192.168.182.200 | sudo tee -a /home/jenkins/.ssh/known_hosts > /dev/null
-                sudo chmod 644 /home/jenkins/.ssh/known_hosts
-                sudo chown jenkins:jenkins /home/jenkins/.ssh/known_hosts
-            '''
-        }
-    }
-}
-stage('Correction permissions SSH') {
-    steps {
-        script {
-            sh '''
-                sudo mkdir -p /home/jenkins/.ssh
-                sudo chown -R jenkins:jenkins /home/jenkins/.ssh
-                sudo chmod 700 /home/jenkins/.ssh
-                sudo chmod 600 /home/jenkins/.ssh/id_rsa
-            '''
-        }
-    }
-}
 
-
-stage('Déploiement') {
-    steps {
-        script {
-            sh '''
-                sudo -u jenkins ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
-                    "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
-            '''
+        stage('Vérifier accès SSH') {
+            steps {
+                script {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo Connexion réussie"
+                    '''
+                }
+            }
         }
-    }
-}
+
+        stage('Déploiement') {
+            steps {
+                script {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -i /home/jenkins/.ssh/id_rsa jenkins@192.168.182.200 \
+                            "docker run -d --name aston_villa -p 50:50 nawreswear/aston_villa:latest"
+                    '''
+                }
+            }
+        }
 
 
     }
