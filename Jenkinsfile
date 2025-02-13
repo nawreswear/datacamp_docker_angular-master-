@@ -234,26 +234,25 @@ stage('Setup SSH') {
                 }
             }
         }
- stage('Deploy via SSH') {
+stage('Deploy via SSH') {
     steps {
         script {
             sh '''
-            # Vérifier si la clé existe
+            # Vérifier si la clé SSH existe
             if [ -f /var/lib/jenkins/.ssh/id_rsa ]; then
-                echo "Clé SSH trouvée, ajoutée à l'agent."
-                eval "$(ssh-agent -s)"
-                ssh-add /var/lib/jenkins/.ssh/id_rsa
+                echo "Clé SSH trouvée, suppression de la clé existante."
+                rm -f /var/lib/jenkins/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa.pub
             else
-                echo "La clé SSH n'existe pas, vérifier la configuration."
-                exit 1
+                echo "Aucune clé SSH existante."
             fi
             
-            # Établir la connexion SSH
-            ssh -vvv -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa jenkins@192.168.182.200 "echo 'Connexion réussie'"
+            # Établir la connexion SSH sans clé (accès direct avec mot de passe ou autre méthode)
+            ssh -vvv -o StrictHostKeyChecking=no jenkins@192.168.182.200 "echo 'Connexion réussie'"
             '''
         }
     }
 }
+
 
 
 
