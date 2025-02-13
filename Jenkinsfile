@@ -139,6 +139,7 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Ajout de l'hôte distant aux clés connues
+                echo "Ajout de l'hôte distant aux clés connues..."
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
                 chmod 644 ~/.ssh/known_hosts
 
@@ -163,6 +164,7 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Test de connexion SSH pour vérifier si tout fonctionne
+                echo "Test de la connexion SSH..."
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
                 if [ $? -ne 0 ]; then
                     echo "❌ La connexion SSH a échoué."
@@ -170,6 +172,7 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Exécution de la commande Docker avec le tag spécifié
+                echo "Exécution du conteneur Docker..."
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
                 if [ $? -ne 0 ]; then
                     echo "❌ L'exécution du conteneur Docker a échoué."
