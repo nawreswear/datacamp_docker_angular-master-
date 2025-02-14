@@ -123,9 +123,8 @@ stage('Configurer la clé SSH') {
                 #!/bin/bash -e
                 echo "🔑 Configuration de la clé SSH"
 
-                # Créer le répertoire ~/.ssh s'il n'existe pas
-                mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
+                # Créer le répertoire ~/.ssh s'il n'existe pas, et s'assurer que les permissions sont correctes
+                ssh vagrant@192.168.182.200 "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
 
                 # Ne pas afficher la clé privée dans les logs
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
