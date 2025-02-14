@@ -124,31 +124,31 @@ stage('Configurer la clé SSH') {
 
                 # Création du dossier .ssh s'il n'existe pas
                 mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
+                chmod 700 ~/.ssh  # La permission 700 permet uniquement à l'utilisateur d'y accéder
 
                 # Sauvegarde de la clé privée SSH
                 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa
+                chmod 600 ~/.ssh/id_rsa  # Permission sécurisée pour la clé privée
 
-                # Vérification de la clé privée
+                # Vérification de la clé privée (génération de la clé publique à partir de la clé privée)
                 if ! ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub; then
                     echo "❌ La clé privée est invalide ou corrompue !" >&2
                     exit 1
                 fi
 
-                # Vérification que la clé publique est correcte
+                # Vérification de l'intégrité de la clé publique
                 if ! ssh-keygen -y -f ~/.ssh/id_rsa > /dev/null 2>&1; then
                     echo "❌ La clé privée est invalide ou corrompue !" >&2
                     exit 1
                 fi
 
-                # Vérification des permissions des fichiers .ssh
+                # Vérification et correction des permissions des fichiers .ssh
                 chmod 700 ~/.ssh
                 chmod 600 ~/.ssh/id_rsa
-                chmod 644 ~/.ssh/id_rsa.pub
-                chmod 644 ~/.ssh/known_hosts
+                chmod 644 ~/.ssh/id_rsa.pub  # Permission de lecture publique pour la clé publique
+                chmod 644 ~/.ssh/known_hosts  # Permission de lecture pour known_hosts
 
-                # Ajout de l'hôte distant aux known_hosts
+                # Ajout de l'hôte distant aux known_hosts (évite les avertissements de sécurité sur la première connexion)
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
 
                 # Test de connexion SSH avec débogage
@@ -163,6 +163,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
     }
 
