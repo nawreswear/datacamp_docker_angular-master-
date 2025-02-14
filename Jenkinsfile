@@ -136,10 +136,14 @@ stage('Configurer la clé SSH') {
         ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
 
-        # Test SSH connection (disable strict host key checking to avoid interaction)
-        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
+        # Check permissions of .ssh and known_hosts
+        chmod 700 ~/.ssh
+        chmod 644 ~/.ssh/known_hosts
 
-        # Continue with your other commands...
+        # Test SSH connection with verbose output for debugging
+        ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
+
+        ssh vagrant@192.168.182.200 'sudo docker run “nawreswear/aston_villa:${DOCKER_TAG}"’”
     '''
         }
     }
