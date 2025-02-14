@@ -112,7 +112,6 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
 
             // Pousser l'image Docker
             sh "sudo -u jenkins docker push nawreswear/aston_villa:${DOCKER_TAG}"
-            //sh " fin push"
         }
     }
 }
@@ -126,7 +125,7 @@ stage('Configurer la clé SSH') {
                 # Créer le répertoire ~/.ssh s'il n'existe pas, et s'assurer que les permissions sont correctes
                 ssh vagrant@192.168.182.200 "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
 
-                # Ne pas afficher la clé privée dans les logs
+                # Ne pas afficher la clé privée dans les logs et la sauvegarder dans ~/.ssh/id_rsa
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
@@ -193,7 +192,6 @@ stage('Configurer la clé SSH') {
         }
     }
 }
-
 
 
    /* stage('Configurer la clé SSH') {
