@@ -136,18 +136,21 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
+                # Ajout de la clé publique au serveur distant
+                ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@192.168.182.200
+
                 # Vérification et correction des permissions des fichiers .ssh
                 chmod 700 ~/.ssh
                 chmod 600 ~/.ssh/id_rsa
                 chmod 644 ~/.ssh/id_rsa.pub  # Permission de lecture publique pour la clé publique
                 chmod 644 ~/.ssh/known_hosts  # Permission de lecture pour known_hosts
 
-                # Ajout de l'hôte distant aux known_hosts (évite les avertissements de sécurité sur la première connexion)
+                # Ajout de l'hôte distant aux known_hosts
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
 
                 # Test de connexion SSH avec débogage
                 echo "🔍 Test de la connexion SSH..."
-                ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
+                ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
 
                 # Lancement du conteneur Docker sur l'hôte distant
                 ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
