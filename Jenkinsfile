@@ -115,6 +115,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
+
 stage('Configurer la clé SSH') {
     steps {
         script {
@@ -127,7 +128,55 @@ stage('Configurer la clé SSH') {
                 chmod 700 ~/.ssh  # La permission 700 permet uniquement à l'utilisateur d'y accéder
 
                 # Sauvegarde de la clé privée SSH
-                echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+                echo "-----BEGIN OPENSSH PRIVATE KEY-----
+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
+-----END OPENSSH PRIVATE KEY-----" > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa  # Permission sécurisée pour la clé privée
 
                 # Vérification de la clé privée (génération de la clé publique à partir de la clé privée)
@@ -137,7 +186,15 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Ajout de la clé publique au serveur distant
-                ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@192.168.182.200
+                echo "🔑 Ajout de la clé publique au serveur distant..."
+                if ! ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@192.168.182.200; then
+                    echo "❌ Impossible d'ajouter la clé publique sur le serveur distant !" >&2
+                    exit 1
+                fi
+
+                # Ajout de l'hôte distant aux known_hosts
+                echo "🔍 Ajout de l'hôte distant aux known_hosts..."
+                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
 
                 # Vérification et correction des permissions des fichiers .ssh
                 chmod 700 ~/.ssh
@@ -145,21 +202,25 @@ stage('Configurer la clé SSH') {
                 chmod 644 ~/.ssh/id_rsa.pub  # Permission de lecture publique pour la clé publique
                 chmod 644 ~/.ssh/known_hosts  # Permission de lecture pour known_hosts
 
-                # Ajout de l'hôte distant aux known_hosts
-                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-
                 # Test de connexion SSH avec débogage
                 echo "🔍 Test de la connexion SSH..."
-                ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
+                if ! ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"; then
+                    echo "❌ La connexion SSH a échoué !" >&2
+                    exit 1
+                fi
 
                 # Lancement du conteneur Docker sur l'hôte distant
-                ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
-                    -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
-                    "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
+                echo "🚀 Lancement du conteneur Docker sur l'hôte distant..."
+                if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"; then
+                    echo "❌ Échec du lancement du conteneur Docker !" >&2
+                    exit 1
+                fi
             '''
         }
     }
 }
+
+
 
 
 
