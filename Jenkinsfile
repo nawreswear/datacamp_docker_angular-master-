@@ -123,9 +123,11 @@ stage('Configurer la clé SSH') {
                 echo "🔑 Configuration de la clé SSH"
 
                 # Créer le répertoire ~/.ssh s'il n'existe pas, et s'assurer que les permissions sont correctes
+                echo "Création du répertoire .ssh et modification des permissions"
                 ssh vagrant@192.168.182.200 "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
 
                 # Ne pas afficher la clé privée dans les logs et la sauvegarder dans ~/.ssh/id_rsa
+                echo "Configuration de la clé privée SSH"
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
@@ -155,6 +157,7 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Ajout de la clé publique sur le serveur distant
+                echo "Ajout de la clé publique dans authorized_keys..."
                 echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
                 if [ $? -ne 0 ]; then
                     echo "❌ L'ajout de la clé publique au fichier authorized_keys a échoué."
@@ -162,6 +165,7 @@ stage('Configurer la clé SSH') {
                 fi
 
                 # Assurez-vous que le fichier authorized_keys a les bonnes permissions
+                echo "Vérification des permissions du fichier authorized_keys..."
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "
                     chmod 700 ~/.ssh;
                     chmod 600 ~/.ssh/authorized_keys;
@@ -179,9 +183,9 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                # Exécution de la commande Docker avec le tag spécifié
+                # Exécution de la commande Docker avec le tag spécifié en tant qu'utilisateur Jenkins
                 echo "Exécution du conteneur Docker..."
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
+                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo -u jenkins docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
                 if [ $? -ne 0 ]; then
                     echo "❌ L'exécution du conteneur Docker a échoué."
                     exit 1
@@ -192,6 +196,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
 
    /* stage('Configurer la clé SSH') {
