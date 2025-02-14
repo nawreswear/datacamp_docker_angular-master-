@@ -8,7 +8,7 @@ pipeline {
     environment {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
         DOCKER_TAG = '' 
-        SSH_KEY_PATH = '/home/jenkins/.ssh/id_rsa'
+        SSH_KEY_PATH = '/home/jenkins/.ssh/id_rsa' 
         SSH_PUBLIC_KEY='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2n4UBd6kbm2n4kurgS3YcaSVUi06JmEeVEVU+Qutad5VAZa98/EY35X76zlAxvBSApUMWSKYsW8dchEs0vTZkisvuyiecFsvjMaE3A0+4tFZIHRPvTiotHP0swOhzR32DbVpV4R8ud9HjbfyE3humccX/XWG07/qMfbeMkaVME07A5bVyVUN3ea+ql1nHod2iGtIX2Qm/zMEsgCQ0Nlm3nXLSV4MEsD9ntaO95rIDF84xRVn4k4Ef/fn92J/ryYegeS9hq2O4LNiwk54jbo4mUhHC/tlSbKN0ym9Ek5QKDSjG7eUVzrjjJQXx7hYVTUHwYfRz1RjQ99kjHayD9dawXbIUQ/gqURFrzbVpBYpBFZCq27xRt2uIK7NDr47aEf+qHj4NPn079oEcoOdmf8da9XqWOreW20RYF6TjP2GZlGZrFo0Kd1g1OobJPKt7DDi47He06g+ZZB5oLIC62BeI07MHUedYwRxPZZaA39XRqNQSkfs8BgWV1eKpPEUHQiAhqxo6lS8evbz66cYvOamtzvBQHSClZg2iHRAK5pHT4wOmPjK5dj8fpPDmqP/kEf5wEPiptnATo7ShczHel/C410o/XCKbA8nBAXMnlGf+EnVY+n5mjmDoO98ylqJd8kkAXZ2FTQyvS9/ZD4f6vuEC+NuBPjE26N1YD7KZn6naSQ== vagrant@ubuntu-focal'
         SSH_PRIVATE_KEY = '''-----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
@@ -131,14 +131,25 @@ stage('Configurer la clé SSH') {
                 chmod 600 ~/.ssh/id_rsa
 
                 # Vérification de la clé privée
+                if ! ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub; then
+                    echo "❌ La clé privée est invalide ou corrompue !" >&2
+                    exit 1
+                fi
+
+                # Vérification que la clé publique est correcte
                 if ! ssh-keygen -y -f ~/.ssh/id_rsa > /dev/null 2>&1; then
                     echo "❌ La clé privée est invalide ou corrompue !" >&2
                     exit 1
                 fi
 
+                # Vérification des permissions des fichiers .ssh
+                chmod 700 ~/.ssh
+                chmod 600 ~/.ssh/id_rsa
+                chmod 644 ~/.ssh/id_rsa.pub
+                chmod 644 ~/.ssh/known_hosts
+
                 # Ajout de l'hôte distant aux known_hosts
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
 
                 # Test de connexion SSH avec débogage
                 echo "🔍 Test de la connexion SSH..."
@@ -152,7 +163,6 @@ stage('Configurer la clé SSH') {
         }
     }
 }
-
 
     }
 
