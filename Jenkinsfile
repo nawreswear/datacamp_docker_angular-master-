@@ -209,6 +209,12 @@ pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
                     exit 1
                 fi
 
+                # Vérification que la variable DOCKER_TAG est définie
+                if [ -z "$DOCKER_TAG" ]; then
+                    echo "❌ La variable DOCKER_TAG n'est pas définie !" >&2
+                    exit 1
+                fi
+
                 # Lancement du conteneur Docker sur l'hôte distant
                 echo "🚀 Lancement du conteneur Docker sur l'hôte distant..."
                 if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"; then
@@ -219,6 +225,7 @@ pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
         }
     }
 }
+
 
 
 
