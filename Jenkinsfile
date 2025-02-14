@@ -122,76 +122,24 @@ stage('Configurer la clé SSH') {
                 #!/bin/bash -e
                 echo "🔑 Configuration de la clé SSH"
 
-                # Créer le répertoire ~/.ssh s'il n'existe pas, et s'assurer que les permissions sont correctes
-                echo "Création du répertoire .ssh et modification des permissions"
-                ssh vagrant@192.168.182.200 "mkdir -p ~/.ssh && chmod 700 ~/.ssh"
-
-                # Ne pas afficher la clé privée dans les logs et la sauvegarder dans ~/.ssh/id_rsa
-                echo "Configuration de la clé privée SSH"
-                echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa
-
-                # Vérification si la clé privée est correctement configurée
+                # Check if the private key exists
                 if [ ! -f ~/.ssh/id_rsa ]; then
-                    echo "❌ La clé privée SSH n'a pas été configurée correctement."
+                    echo "❌ La clé privée n'existe pas."
                     exit 1
                 fi
 
-                # Ajout de l'hôte distant aux clés connues
-                echo "Ajout de l'hôte distant aux clés connues..."
-                ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-                chmod 644 ~/.ssh/known_hosts
+                # Output the private key fingerprint for debugging purposes (only print this out securely!)
+                ssh-keygen -lf ~/.ssh/id_rsa
 
-                # Vérification si le fichier known_hosts existe après ajout de l'hôte
-                if [ ! -f ~/.ssh/known_hosts ]; then
-                    echo "❌ Le fichier known_hosts n'a pas été configuré correctement."
-                    exit 1
-                fi
-
-                # Assurez-vous que l'hôte distant accepte la clé SSH sans erreur
-                echo "Vérification de l'accès SSH sans mot de passe..."
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Accès SSH réussi'"
-                if [ $? -ne 0 ]; then
-                    echo "❌ Échec de la connexion SSH au serveur distant."
-                    exit 1
-                fi
-
-                # Ajout de la clé publique sur le serveur distant
-                echo "Ajout de la clé publique dans authorized_keys..."
-                echo "$SSH_PUBLIC_KEY" | ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-                if [ $? -ne 0 ]; then
-                    echo "❌ L'ajout de la clé publique au fichier authorized_keys a échoué."
-                    exit 1
-                fi
-
-                # Assurez-vous que le fichier authorized_keys a les bonnes permissions
-                echo "Vérification des permissions du fichier authorized_keys..."
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "
-                    chmod 700 ~/.ssh;
-                    chmod 600 ~/.ssh/authorized_keys;
-                    ls -l ~/.ssh/authorized_keys"
-                if [ $? -ne 0 ]; then
-                    echo "❌ La clé publique n'a pas été ajoutée correctement."
-                    exit 1
-                fi
-
-                # Test de connexion SSH pour vérifier si tout fonctionne
+                # Check if SSH can successfully connect to the remote machine
                 echo "Test de la connexion SSH..."
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "exit"
+                ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
                 if [ $? -ne 0 ]; then
                     echo "❌ La connexion SSH a échoué."
                     exit 1
                 fi
 
-                # Exécution de la commande Docker avec le tag spécifié en tant qu'utilisateur Jenkins
-                echo "Exécution du conteneur Docker..."
-                ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 'sudo -u jenkins docker run "nawreswear/aston_villa:${DOCKER_TAG}"'
-                if [ $? -ne 0 ]; then
-                    echo "❌ L'exécution du conteneur Docker a échoué."
-                    exit 1
-                fi
-
-                echo "✅ Clé SSH et conteneur Docker configurés avec succès."
+                # Continue with other steps as needed...
             '''
         }
     }
