@@ -171,19 +171,19 @@ u1K5n+21UwGLLuI5rJWTB9sAM2mQksrY0lIOzhCuAzpLYaFbJmG0uQEWuDlG4xofDwJ9CN
 Tm83mTXzmjX98KwRRYqw9lvRfqmvVSoOlYwbDDwq/0vHx3N39sl1PmtkWlahc47H1anXmv
 iYB+aAD+c1EGwlcw7azv3jLnCZrCt+EJEmtV3FK7ju6Sy/MIXhT2EvkX7f4scFCoTR0NNb
 Es4XfB3kgFpBsmlQMCIqTTWMITH2h8IZf6ZKd7vICfZeSVHsrzkx8X9FsEkqXNDNLbwzXm
-DSukh4ckFMbCQDGa/wAAAQAAAQEA504ZbwbuctHVTlQJXw++lLOOlBQsrc/rnARtzRZJqt
-NTXNbFqbK5pW42OaytMv44mtH8OlcRjr4hvGKE3t5ra7thDXiN8yXINcLjI9J7fXuL+RxN
-WNUzdAD1NzPguaKLFfXdPkeJUa4k3KIhS+k4j9NH+dW6vBuXdhAFtG+YJ/Qr3l573D6yn/
-Z1nrhYRnf1yM9850bqzXVqVUnYe8iV/doFl2+BiGinHE3YweJsPEuTMfl4R5DfXU3CBg8Z
-+JT5tl6D+wgNQAi78OD23c2YO6oFoZWNkPlvZ94DW6CH2jSXVp2tNOWGD0PM3BfwiV39s
-H6hdp6MWEdnQqELTv7cAQAAAQEAzfpNb8lwh99Dg0rANKGcNYGTFbYVVGta8Wb1bL0O3dr
-ALROQYPxpk+RzHMkCobg39chljfHYiPfSiWI3/Ep4fwuRe5axoV4y5O9P9nMcI5kPL2cUem
-UKDlTNE+VSQQy9fjHnk6kINbYqznZIBBZd7c3MPkk0hVQpoWl4Z56vMnmu8A/aIGcFPM4u8
-PylIVA77POE2PpejXbDk3jWH30lPqsZML30sMW3vsMzGUT+XOPnBvEGDA4z1JuZXEwGqk
-1lB0U/ciSPu+5oBjAkl2FLOwMDb1Nr6qlaT1eU6T46FTESOrS98lku6rVgOVffR1RBd1Rb
-uvycpm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
+DSukh4ckFMbCQDGa/wAAAQEA504ZbwbuctHVTlQJXw++lLOOlBQsrc/rnARtzRZJqtNTXN
+bFqbK5pW42OaytMv44mtH8OlcRjr4hvGKE3t5ra7thDXiN8yXINcLjI9J7fXuL+RxNWNUz
+dAD1NzPguaKLFfXdPkeJUa4k3KIhS+k4j9NH+dW6vBuXdhAFtG+YJ/Qr3l573D6yn/Z1nr
+hYRnf1yM9850bqzXVqVUnYe8iV/doFl2+BiGinHE3YweJsPEuTMfl4R5DfXU3CBg8Z+JT5
+tl6D+wgNQAi78OD23c2YO6oFoZWNkPlvZ94DW6CH2jSXVp2tNOWGD0PM3BfwiV39sH6hdp
+6MWEdnQqELTv7cAQAAAQEAzfpNb8lwh99Dg0rANKGcNYGTFbYVVGta8Wb1bL0O3drALROQ
+YPxpk+RzHMkCobg39chljfHYiPfSiWI3/Ep4fwuRe5axoV4y5O9P9nMcI5kPL2cUemUKDl
+TNE+VSQQy9fjHnk6kINbYqznZIBBZd7c3MPkk0hVQpoWl4Z56vMnmu8A/aIGcFPM4u8Pyl
+IVA77POE2PpejXbDk3jWH30lPqsZML30sMW3vsMzGUT+XOPnBvEGDA4z1JuZXEwGqk1lB0
+U/ciSPu+5oBjAkl2FLOwMDb1Nr6qlaT1eU6T46FTESOrS98lku6rVgOVffR1RBd1Rbuvyc
+pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
 -----END OPENSSH PRIVATE KEY-----" > ~/.ssh/id_rsa
-                chmod 600 ~/.ssh/id_rsa  # Permission sécurisée pour la clé privée
+               chmod 600 ~/.ssh/id_rsa  # Permission sécurisée pour la clé privée
 
                 # Vérification de la clé privée (génération de la clé publique à partir de la clé privée)
                 if ! ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub; then
@@ -231,7 +231,6 @@ uvycpm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
         }
     }
 }
-
 
     }
 
