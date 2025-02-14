@@ -115,8 +115,10 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
     }
 }
-withEnv(["$SSH_PRIVATE_KEY"]) {
-    sh '''
+stage('Configurer la clé SSH') {
+    steps {
+        script {
+           sh '''
         #!/bin/bash -e
         echo "🔑 Configuration de la clé SSH"
 
@@ -136,7 +138,11 @@ withEnv(["$SSH_PRIVATE_KEY"]) {
 
         # Continue with your other commands...
     '''
+        }
+    }
 }
+
+
 
    /* stage('Configurer la clé SSH') {
     steps {
