@@ -118,65 +118,38 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
 stage('Configurer la clé SSH') {
     steps {
         script {
-           sh '''
-        #!/bin/bash -e
-        echo "🔑 Configuration de la clé SSH"
-
-        # Create the .ssh directory if it doesn't exist
-        mkdir -p ~/.ssh
-
-        # Save the private key to the correct location
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
-        # Verify the private key is correctly saved
-        ssh-keygen -lf ~/.ssh/id_rsa
-
-        # Add the remote host to known hosts (to prevent SSH from asking to confirm the host)
-        ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
-        chmod 644 ~/.ssh/known_hosts
-
-        # Check permissions of .ssh and known_hosts
-        chmod 700 ~/.ssh
-        chmod 644 ~/.ssh/known_hosts
-
-        # Test SSH connection with verbose output for debugging
-        ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
-
-        ssh vagrant@192.168.182.200 'sudo docker run “nawreswear/aston_villa:${DOCKER_TAG}"’”
-    '''
-        }
-    }
-}
-
-
-
-
-   /* stage('Configurer la clé SSH') {
-    steps {
-        script {
             sh '''
                 #!/bin/bash -e
                 echo "🔑 Configuration de la clé SSH"
 
+                # Create the .ssh directory if it doesn't exist
                 mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
 
-                # Réécriture correcte de la clé privée
-                echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+                # Save the private key to the correct location
+                echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
-                # Ajout de l'hôte distant aux clés connues
+                # Verify the private key is correctly saved
+                ssh-keygen -lf ~/.ssh/id_rsa
+
+                # Add the remote host to known hosts (to prevent SSH from asking to confirm the host)
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
                 chmod 644 ~/.ssh/known_hosts
 
-                echo "✅ Clé SSH configurée avec succès."
-                sh "ssh vagrant@192.168.182.200"
-                sh "ssh vagrant@192.168.182.200 'sudo docker run “nawreswear/aston_villa:${DOCKER_TAG}"’”
+                # Check permissions of .ssh and known_hosts
+                chmod 700 ~/.ssh
+                chmod 644 ~/.ssh/known_hosts
+
+                # Test SSH connection with verbose output for debugging
+                ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
+
+                # Run Docker container on the remote host
+                ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
             '''
         }
     }
-}*/
+}
+
 
     }
 
