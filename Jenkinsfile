@@ -74,9 +74,10 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     // Appel de la fonction pour obtenir la version du commit
-                    DOCKER_TAG = getVersion() 
-                    
+                    //DOCKER_TAG = getVersion()                    
                     // Affichage du tag Docker
+                    //echo "Tag Docker : ${DOCKER_TAG}"
+                    DOCKER_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     echo "Tag Docker : ${DOCKER_TAG}"
                 }
             }
@@ -86,7 +87,8 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         stage('Docker Build') {
             steps {
                 script {
-                    sh "sudo docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
+                    //sh "sudo docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
+                    sh "docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
                 }
             }
         }
