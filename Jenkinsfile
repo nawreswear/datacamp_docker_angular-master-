@@ -225,8 +225,12 @@ pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
                     echo "Échec de l'exécution de docker run"
                     exit 1
                 fi
+                # Run Docker container on the remote host
+                #ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
 
             '''
+             // Launch Docker container on remote host
+                    sh "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 \"sudo docker run nawreswear/aston_villa:${DOCKER_TAG}\""
         }
     }
 }
