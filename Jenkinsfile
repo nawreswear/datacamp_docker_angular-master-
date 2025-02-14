@@ -128,7 +128,6 @@ stage('Configurer la clé SSH') {
                 chmod 700 ~/.ssh
 
                 # Ne pas afficher la clé privée dans les logs
-                # Réécriture correcte de la clé privée sans retour chariot
                 echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
@@ -195,6 +194,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
 
    /* stage('Configurer la clé SSH') {
