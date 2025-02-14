@@ -141,8 +141,7 @@ stage('Configurer la clé SSH') {
                 chmod 644 ~/.ssh/known_hosts
 
                 # Test de connexion SSH avec débogage
-                ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
-                    -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
+                ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
 
                 # Lancement du conteneur Docker sur l'hôte distant
                 ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
