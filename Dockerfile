@@ -20,7 +20,7 @@ FROM nginx:1.17.1-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copier les fichiers compilés du dossier dist dans le répertoire Nginx
-COPY --from=build /usr/src/app/dist/aston-villa-app /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist/aston-villa-app/ /usr/share/nginx/html
 
 
 # Exposer le port 80
