@@ -219,24 +219,20 @@ pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
                 #if [ -z "$DOCKER_TAG" ]; then
                     #echo "❌ La variable DOCKER_TAG n'est pas définie !" >&2
                     #exit 1
-                #fi
-                
-
-                # Lancement du conteneur Docker sur l'hôte distant
-                #echo "DOCKER_TAG: ${DOCKER_TAG}"
-                #if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"; then
-                    #echo "Échec de l'exécution de docker run"
-                    #exit 1
-                #fi
+                #fi               
                 if (!DOCKER_TAG) {
                         error("❌ La variable DOCKER_TAG n'est pas définie dans l'étape SSH!")
                     }
-                # Run Docker container on the remote host
-                #ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
-
+                # Lancement du conteneur Docker sur l'hôte distant
+                echo "DOCKER_TAG: ${DOCKER_TAG}"
+                if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"; then
+                    echo "Échec de l'exécution de docker run"
+                    exit 1
+                fi
+                
+            
             '''
-             // Launch Docker container on remote host
-                    sh "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 \"sudo docker run nawreswear/aston_villa:${DOCKER_TAG}\""
+            
         }
     }
 }
