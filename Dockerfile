@@ -10,7 +10,7 @@ RUN npm install
 COPY . ./
 
 # Compiler le projet (les fichiers compilés doivent se retrouver dans le dossier dist)
-RUN npm run build
+RUN npm run build --prod
 
 ### STAGE 2: Run ###
 
@@ -21,7 +21,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copier les fichiers compilés du dossier dist dans le répertoire Nginx
 # Vous devez vous assurer que les fichiers se trouvent bien dans /usr/src/app/dist
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+#COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist/aston_villa_app /usr/share/nginx/html
+
 
 # Exposer le port 80
 EXPOSE 80
