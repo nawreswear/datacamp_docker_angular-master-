@@ -6,6 +6,7 @@ pipeline {
     }
 
     environment {
+        DOCKER_TAG = 'latest'
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
         DOCKER_TAG = '' 
         SSH_KEY_PATH = '/home/jenkins/.ssh/id_rsa' 
