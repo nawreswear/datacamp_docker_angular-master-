@@ -124,7 +124,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
     }
 }
 
-stage('Configurer la clé SSH') {
+stage('Déploiement') {
     steps {
         script {
             sh '''
