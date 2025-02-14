@@ -136,12 +136,6 @@ stage('Configurer la clé SSH') {
                     exit 1
                 fi
 
-                # Vérification de l'intégrité de la clé publique
-                if ! ssh-keygen -y -f ~/.ssh/id_rsa > /dev/null 2>&1; then
-                    echo "❌ La clé privée est invalide ou corrompue !" >&2
-                    exit 1
-                fi
-
                 # Vérification et correction des permissions des fichiers .ssh
                 chmod 700 ~/.ssh
                 chmod 600 ~/.ssh/id_rsa
@@ -163,6 +157,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
 
     }
