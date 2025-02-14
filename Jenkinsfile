@@ -225,7 +225,7 @@ pm6T7E2FFrbAAQAAABR2YWdyYW50QHVidW50dS1mb2NhbAECAwQF
 
                 # Lancement du conteneur Docker sur l'hôte distant
                 echo "DOCKER_TAG: ${DOCKER_TAG}"
-                if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/album-grabber:${DOCKER_TAG}"; then
+                if ! ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"; then
                     echo "❌ Échec du lancement du conteneur Docker !" >&2
                     exit 1
                 fi
