@@ -122,6 +122,9 @@ stage('Configurer la clé SSH') {
         #!/bin/bash -e
         echo "🔑 Configuration de la clé SSH"
 
+        # Create the .ssh directory if it doesn't exist
+        mkdir -p ~/.ssh
+
         # Save the private key to the correct location
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
@@ -129,11 +132,11 @@ stage('Configurer la clé SSH') {
         # Verify the private key is correctly saved
         ssh-keygen -lf ~/.ssh/id_rsa
 
-        # Add the remote host to known hosts
+        # Add the remote host to known hosts (to prevent SSH from asking to confirm the host)
         ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
 
-        # Test SSH connection
+        # Test SSH connection (disable strict host key checking to avoid interaction)
         ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
 
         # Continue with your other commands...
@@ -141,6 +144,7 @@ stage('Configurer la clé SSH') {
         }
     }
 }
+
 
 
 
