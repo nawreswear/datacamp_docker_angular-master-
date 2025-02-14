@@ -130,7 +130,7 @@ stage('Configurer la clé SSH') {
                 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
-                # Vérification de la clé privée (évite l'erreur de non-correspondance)
+                # Vérification de la clé privée
                 if ! ssh-keygen -y -f ~/.ssh/id_rsa > /dev/null 2>&1; then
                     echo "❌ La clé privée est invalide ou corrompue !" >&2
                     exit 1
@@ -141,6 +141,7 @@ stage('Configurer la clé SSH') {
                 chmod 644 ~/.ssh/known_hosts
 
                 # Test de connexion SSH avec débogage
+                echo "🔍 Test de la connexion SSH..."
                 ssh -vvv -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
 
                 # Lancement du conteneur Docker sur l'hôte distant
@@ -151,7 +152,6 @@ stage('Configurer la clé SSH') {
         }
     }
 }
-
 
 
     }
