@@ -122,33 +122,37 @@ stage('Configurer la clé SSH') {
                 #!/bin/bash -e
                 echo "🔑 Configuration de la clé SSH"
 
-                # Create the .ssh directory if it doesn't exist
+                # Création du dossier .ssh s'il n'existe pas
                 mkdir -p ~/.ssh
+                chmod 700 ~/.ssh
 
-                # Save the private key to the correct location
+                # Sauvegarde de la clé privée SSH
                 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
                 chmod 600 ~/.ssh/id_rsa
 
-                # Verify the private key is correctly saved
-                ssh-keygen -lf ~/.ssh/id_rsa
+                # Vérification de la clé privée (évite l'erreur de non-correspondance)
+                if ! ssh-keygen -y -f ~/.ssh/id_rsa > /dev/null 2>&1; then
+                    echo "❌ La clé privée est invalide ou corrompue !" >&2
+                    exit 1
+                fi
 
-                # Add the remote host to known hosts (to prevent SSH from asking to confirm the host)
+                # Ajout de l'hôte distant aux known_hosts
                 ssh-keyscan -H 192.168.182.200 >> ~/.ssh/known_hosts
                 chmod 644 ~/.ssh/known_hosts
 
-                # Check permissions of .ssh and known_hosts
-                chmod 700 ~/.ssh
-                chmod 644 ~/.ssh/known_hosts
+                # Test de connexion SSH avec débogage
+                ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
+                    -i ~/.ssh/id_rsa vagrant@192.168.182.200 "echo '✅ Connexion SSH réussie'"
 
-                # Test SSH connection with verbose output for debugging
-                ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "echo 'Connexion SSH réussie'"
-
-                # Run Docker container on the remote host
-                ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vagrant@192.168.182.200 "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
+                # Lancement du conteneur Docker sur l'hôte distant
+                ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
+                    -i ~/.ssh/id_rsa vagrant@192.168.182.200 \
+                    "sudo docker run nawreswear/aston_villa:${DOCKER_TAG}"
             '''
         }
     }
 }
+
 
 
     }
