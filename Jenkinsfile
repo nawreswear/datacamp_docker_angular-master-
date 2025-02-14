@@ -85,14 +85,6 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             }
             }
 
-        stage('Build Angular') {
-            steps {
-                script {
-                    sh 'npm install' // Assure-toi que les dépendances sont installées
-                    sh 'ng build --configuration=production' // Compile l'application Angular
-                }
-            }
-        }
         stage('Docker Build') {
             steps {
                 script {
