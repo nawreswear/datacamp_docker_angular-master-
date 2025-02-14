@@ -88,7 +88,7 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
             steps {
                 script {
                     //sh "sudo docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
-                    sh "docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
+                    sh "sudo docker build -t nawreswear/aston_villa:${DOCKER_TAG} ."
                 }
             }
         }
