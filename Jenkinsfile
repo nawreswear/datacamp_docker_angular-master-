@@ -168,7 +168,7 @@ stage('Configurer la clé SSH') {
                 ssh -o StrictHostKeyChecking=no vagrant@192.168.182.200 "
                     chmod 700 ~/.ssh;
                     chmod 600 ~/.ssh/authorized_keys;
-                    cat ~/.ssh/authorized_keys"
+                    ls -l ~/.ssh/authorized_keys"
                 if [ $? -ne 0 ]; then
                     echo "❌ La clé publique n'a pas été ajoutée correctement."
                     exit 1
@@ -195,7 +195,6 @@ stage('Configurer la clé SSH') {
         }
     }
 }
-
 
 
    /* stage('Configurer la clé SSH') {
