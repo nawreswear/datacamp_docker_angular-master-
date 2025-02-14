@@ -71,13 +71,17 @@ peCJp1UDhKUAAAAUamVua2luc0B1YnVudHUtZm9jYWwBAgMEBQYH
         }
 
         stage('Déterminer la version du commit') {
-            steps {
-                script {
-                    DOCKER_TAG = getVersion()
-                    echo "Tag Docker : ${DOCKER_TAG}"
-                }
-            }
+    steps {
+        script {
+            // Appel de la fonction pour obtenir la version du commit
+            DOCKER_TAG = getVersion() 
+            
+            // Affichage du tag Docker
+            echo "Tag Docker : ${DOCKER_TAG}"
         }
+    }
+}
+
 
         stage('Docker Build') {
             steps {
